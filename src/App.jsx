@@ -30,7 +30,7 @@ function App() {
     document.documentElement.setAttribute('data-theme', 'dark'); // Built-in sleek dark theme
   }, []);
 
-  const { data, ticker, fng, loading, payload } = useDashboardData(symbol, interval);
+  const { data, ticker, fng, loading, payload, isLive } = useDashboardData(symbol, interval);
 
   const formatPrice = (price) => {
     if (!price) return '$0.00';
@@ -58,7 +58,19 @@ function App() {
           <div className="bg-primary rounded-xl p-2 flex items-center justify-center shadow-lg shadow-primary/20">
             <BarChart2 className="w-5 h-5 text-primary-content" />
           </div>
-          <h1 className="text-xl font-bold tracking-tight">Crypto Dashboard</h1>
+          <h1 className="text-lg md:text-xl font-bold tracking-tight">Crypto Dashboard</h1>
+          {/* Connection status badge */}
+          {isLive ? (
+            <span className="flex items-center gap-1.5 text-xs font-semibold text-success bg-success/10 border border-success/30 px-2.5 py-1 rounded-full">
+              <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
+              LIVE
+            </span>
+          ) : (
+            <span className="flex items-center gap-1.5 text-xs font-semibold text-warning bg-warning/10 border border-warning/30 px-2.5 py-1 rounded-full">
+              <span className="w-1.5 h-1.5 rounded-full bg-warning" />
+              POLLING
+            </span>
+          )}
         </div>
         <div className="flex-none">
           <a
