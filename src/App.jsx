@@ -12,6 +12,12 @@ const INTERVAL_OPTIONS = [
   { label: '4 Hours', value: '4h' },
   { label: '1 Hour', value: '1h' },
 ];
+const CHART_TYPE_OPTIONS = [
+  { label: 'Candles', value: 'candlestick' },
+  { label: 'Line', value: 'line' },
+  { label: 'Area', value: 'area' },
+  { label: 'Bar', value: 'bar' },
+];
 const INDICATOR_OPTIONS = [
   { label: 'VOL', value: 'VOL' },
   { label: 'EMA', value: 'EMA' },
@@ -23,6 +29,7 @@ const INDICATOR_OPTIONS = [
 function App() {
   const [symbol, setSymbol] = useState("BTCUSDT");
   const [interval, setInterval] = useState("1d");
+  const [chartType, setChartType] = useState("candlestick");
   const [activeIndicators, setActiveIndicators] = useState(['VOL', 'EMA']);
 
   // DaisyUI specific theme application
@@ -87,52 +94,6 @@ function App() {
 
       <main className="max-w-[1600px] mx-auto p-4 md:p-6 space-y-6">
         
-        {/* Controls Bar */}
-        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-base-200 p-4 rounded-2xl border border-base-300 shadow-sm">
-          <div className="flex items-center gap-3 w-full lg:w-auto">
-            <select
-              value={symbol}
-              onChange={(e) => setSymbol(e.target.value)}
-              className="select select-bordered select-sm md:select-md bg-base-100 rounded-xl focus:outline-none flex-1 lg:w-40"
-            >
-              {CRYPTO_OPTIONS.map(opt => <option key={opt} value={opt}>{opt.replace('USDT', '')}</option>)}
-            </select>
-            
-            <select
-              value={interval}
-              onChange={(e) => setInterval(e.target.value)}
-              className="select select-bordered select-sm md:select-md bg-base-100 rounded-xl focus:outline-none flex-1 lg:w-32"
-            >
-              {INTERVAL_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-            </select>
-          </div>
-
-          <div className="flex items-center flex-wrap gap-1 bg-base-100 p-2 pr-4 rounded-3xl border border-base-300">
-            <div className="px-2 py-1 flex items-center gap-2 border-r border-base-300">
-              <Layers className="w-4 h-4 text-base-content/50 " />
-              <span className="text-xs font-bold text-base-content/50 uppercase tracking-wider hidden sm:block">Overlays</span>
-            </div>
-            <div className="join my-2 ml-2">
-              {INDICATOR_OPTIONS.map((opt, index) => (
-                <button
-                  key={opt.value}
-                  onClick={() => toggleIndicator(opt.value)}
-                  className={clsx(
-                    "btn btn-sm md:btn-md join-item border-none",
-                    index === 0 && "rounded-l-xl",
-                    index === INDICATOR_OPTIONS.length - 1 && "rounded-r-xl",
-                    activeIndicators.includes(opt.value)
-                      ? "bg-primary text-primary-content hover:bg-primary/90"
-                      : "bg-base-100 text-base-content/60 hover:bg-base-200 hover:text-base-content"
-                  )}
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-
         {/* KPIs using daisyUI stats */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 animate-fade-in-up animation-delay-100 opacity-0">
           <MetricCard 
@@ -166,15 +127,71 @@ function App() {
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 h-auto animate-fade-in-up animation-delay-200 opacity-0">
           
           {/* Chart Area */}
-          <div className="xl:col-span-2 bg-base-200 border border-base-300 rounded-2xl p-1.5 shadow-sm flex flex-col relative overflow-hidden min-h-[500px]">
+          <div className="xl:col-span-2 bg-base-200 border border-base-300 rounded-2xl p-2 shadow-sm flex flex-col gap-2 relative overflow-hidden min-h-[500px]">
+            
+            {/* Chart Controls Header */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 bg-base-100 p-2 rounded-xl border border-base-300 w-full">
+              
+              {/* Left side: Symbol and Interval */}
+              <div className="flex items-center gap-2 w-full md:w-1/2">
+                <select
+                  value={symbol}
+                  onChange={(e) => setSymbol(e.target.value)}
+                  className="select select-sm bg-base-200 border-none focus:outline-none text-sm font-bold flex-1 rounded-lg min-w-0"
+                >
+                  {CRYPTO_OPTIONS.map(opt => <option key={opt} value={opt}>{opt.replace('USDT', '')}</option>)}
+                </select>
+                
+                <select
+                  value={interval}
+                  onChange={(e) => setInterval(e.target.value)}
+                  className="select select-sm bg-base-200 border-none focus:outline-none text-sm font-medium flex-1 rounded-lg min-w-0"
+                >
+                  {INTERVAL_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                </select>
+
+                <select
+                  value={chartType}
+                  onChange={(e) => setChartType(e.target.value)}
+                  className="select select-sm bg-base-200 border-none focus:outline-none text-sm font-medium flex-1 rounded-lg min-w-0"
+                >
+                  {CHART_TYPE_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                </select>
+              </div>
+
+              {/* Right side: Overlays */}
+              <div className="flex items-center gap-1 bg-base-200 p-1 rounded-lg w-full md:w-1/2">
+                <div className="px-2 flex items-center gap-1.5 shrink-0">
+                  <Layers className="w-4 h-4 text-base-content/70" />
+                  <span className="text-[10px] font-bold text-base-content/70 uppercase tracking-wider hidden sm:block">Overlays</span>
+                </div>
+                <div className="flex flex-1 w-full p-1 rounded-lg shadow-inner gap-1">
+                  {INDICATOR_OPTIONS.map((opt) => (
+                    <button
+                      key={opt.value}
+                      onClick={() => toggleIndicator(opt.value)}
+                      className={clsx(
+                        "btn btn-xs sm:btn-sm border-none font-bold h-8 flex-1 min-w-0 rounded-md transition-all duration-300 relative overflow-hidden",
+                        activeIndicators.includes(opt.value)
+                          ? "bg-gradient-to-br from-primary to-secondary text-primary-content shadow-sm shadow-primary/30 scale-[1.02] z-10"
+                          : "bg-transparent text-base-content/50 hover:bg-base-content/10 hover:text-base-content hover:scale-[1.02]"
+                      )}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
             {loading ? (
-              <div className="flex-1 flex flex-col items-center justify-center gap-4">
+              <div className="flex-1 flex flex-col items-center justify-center gap-4 bg-base-100 rounded-xl">
                 <span className="loading loading-spinner loading-lg text-primary"></span>
                 <p className="text-sm font-medium text-base-content/60">Syncing market data...</p>
               </div>
             ) : (
               <div className="flex-1 w-full rounded-xl overflow-hidden bg-base-100">
-                <ChartWidget data={data} activeIndicators={activeIndicators} />
+                <ChartWidget data={data} activeIndicators={activeIndicators} chartType={chartType} />
               </div>
             )}
           </div>

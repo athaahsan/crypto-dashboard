@@ -163,7 +163,7 @@ export default function AiInsightPanel({ payload, symbol }) {
 
                 <button
                   onClick={fetchInsight}
-                  className="btn btn-outline btn-block rounded-xl border-base-300 hover:bg-base-300 hover:text-base-content hover:border-base-300"
+                  className="btn btn-primary btn-block rounded-xl shadow-sm"
                 >
                   Regenerate Analysis
                 </button>

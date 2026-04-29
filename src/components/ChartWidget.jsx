@@ -1,12 +1,52 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import { createChart } from 'lightweight-charts';
 
-export default function ChartWidget({ data, activeIndicators }) {
+export default function ChartWidget({ data, activeIndicators, chartType = 'candlestick' }) {
   const chartContainerRef = useRef();
+  const legendRef = useRef(null);
   const chartRef = useRef(null);
   const seriesRef = useRef({});
 
-  // 1. Chart Initialization - only recreate when activeIndicators change
+  const updateChartData = useCallback((chartData) => {
+    if (!chartData || chartData.length === 0 || !seriesRef.current.mainSeries) return;
+
+    const s = seriesRef.current;
+
+    if (chartType === 'line' || chartType === 'area') {
+      s.mainSeries.setData(chartData.map(d => ({ time: d.time, value: d.close })));
+    } else {
+      s.mainSeries.setData(chartData.map(d => ({ time: d.time, open: d.open, high: d.high, low: d.low, close: d.close })));
+    }
+
+    if (s.volumeSeries) {
+      s.volumeSeries.setData(chartData.map(d => ({ time: d.time, value: d.volume, color: d.close > d.open ? 'rgba(16, 185, 129, 0.4)' : 'rgba(239, 68, 68, 0.4)' })));
+    }
+
+    if (activeIndicators.includes('EMA')) {
+      s.overlaySeries[0].setData(chartData.map(d => ({ time: d.time, value: d.ema20 })).filter(d => d.value != null && !isNaN(d.value)));
+      s.overlaySeries[1].setData(chartData.map(d => ({ time: d.time, value: d.ema50 })).filter(d => d.value != null && !isNaN(d.value)));
+      s.overlaySeries[2].setData(chartData.map(d => ({ time: d.time, value: d.ema100 })).filter(d => d.value != null && !isNaN(d.value)));
+    }
+    
+    let maOffset = activeIndicators.includes('EMA') ? 3 : 0;
+    if (activeIndicators.includes('MA')) {
+      s.overlaySeries[maOffset].setData(chartData.map(d => ({ time: d.time, value: d.ma7 })).filter(d => d.value != null && !isNaN(d.value)));
+      s.overlaySeries[maOffset + 1].setData(chartData.map(d => ({ time: d.time, value: d.ma50 })).filter(d => d.value != null && !isNaN(d.value)));
+      s.overlaySeries[maOffset + 2].setData(chartData.map(d => ({ time: d.time, value: d.ma100 })).filter(d => d.value != null && !isNaN(d.value)));
+    }
+
+    if (s.rsiSeries) {
+      s.rsiSeries.setData(chartData.map(d => ({ time: d.time, value: d.rsi14 })).filter(d => d.value != null && !isNaN(d.value)));
+    }
+
+    if (s.macdLine && s.macdSignal && s.macdHist) {
+      s.macdLine.setData(chartData.map(d => ({ time: d.time, value: d.macdLine })).filter(d => d.value != null && !isNaN(d.value)));
+      s.macdSignal.setData(chartData.map(d => ({ time: d.time, value: d.macdSignal })).filter(d => d.value != null && !isNaN(d.value)));
+      s.macdHist.setData(chartData.map(d => ({ time: d.time, value: d.macdHist, color: d.macdHist > 0 ? 'rgba(16, 185, 129, 0.5)' : 'rgba(239, 68, 68, 0.5)' })).filter(d => d.value != null && !isNaN(d.value)));
+    }
+  }, [activeIndicators, chartType]);
+
+  // 1. Chart Initialization - only recreate when activeIndicators or chartType change
   useEffect(() => {
     if (!chartContainerRef.current) return;
 
@@ -40,14 +80,36 @@ export default function ChartWidget({ data, activeIndicators }) {
     const priceBottom = subPanes.length * paneHeight;
 
     // --- MAIN PRICE PANE ---
-    s.candlestickSeries = chart.addCandlestickSeries({
-      upColor: '#10B981', 
-      downColor: '#EF4444', 
-      borderVisible: false,
-      wickUpColor: '#10B981',
-      wickDownColor: '#EF4444',
-      priceScaleId: 'right',
-    });
+    if (chartType === 'line') {
+      s.mainSeries = chart.addLineSeries({
+        color: '#10B981',
+        lineWidth: 2,
+        priceScaleId: 'right',
+      });
+    } else if (chartType === 'area') {
+      s.mainSeries = chart.addAreaSeries({
+        lineColor: '#10B981',
+        topColor: 'rgba(16, 185, 129, 0.4)',
+        bottomColor: 'rgba(16, 185, 129, 0)',
+        lineWidth: 2,
+        priceScaleId: 'right',
+      });
+    } else if (chartType === 'bar') {
+      s.mainSeries = chart.addBarSeries({
+        upColor: '#10B981',
+        downColor: '#EF4444',
+        priceScaleId: 'right',
+      });
+    } else {
+      s.mainSeries = chart.addCandlestickSeries({
+        upColor: '#10B981', 
+        downColor: '#EF4444', 
+        borderVisible: false,
+        wickUpColor: '#10B981',
+        wickDownColor: '#EF4444',
+        priceScaleId: 'right',
+      });
+    }
     
     chart.priceScale('right').applyOptions({
       scaleMargins: {
@@ -110,6 +172,44 @@ export default function ChartWidget({ data, activeIndicators }) {
     chartRef.current = chart;
     seriesRef.current = s;
 
+    chart.subscribeCrosshairMove((param) => {
+      if (!legendRef.current) return;
+      if (
+        param.point === undefined ||
+        !param.time ||
+        param.point.x < 0 ||
+        param.point.x > chartContainerRef.current.clientWidth ||
+        param.point.y < 0 ||
+        param.point.y > chartContainerRef.current.clientHeight
+      ) {
+        legendRef.current.style.display = 'none';
+      } else {
+        const mainData = param.seriesData.get(s.mainSeries);
+        const volData = s.volumeSeries ? param.seriesData.get(s.volumeSeries) : null;
+        if (mainData) {
+          const formatNum = (n) => n < 1 ? n.toFixed(4) : n.toFixed(2);
+          const o = mainData.open !== undefined ? mainData.open : mainData.value;
+          const h = mainData.high !== undefined ? mainData.high : mainData.value;
+          const l = mainData.low !== undefined ? mainData.low : mainData.value;
+          const c = mainData.close !== undefined ? mainData.close : mainData.value;
+          const v = volData ? volData.value : null;
+
+          legendRef.current.style.display = 'flex';
+          legendRef.current.innerHTML = `
+            <div class="flex items-center gap-3 font-mono">
+              <span>O: <span class="font-medium text-base-content">${formatNum(o)}</span></span>
+              <span>H: <span class="font-medium text-base-content">${formatNum(h)}</span></span>
+              <span>L: <span class="font-medium text-base-content">${formatNum(l)}</span></span>
+              <span>C: <span class="font-medium text-base-content">${formatNum(c)}</span></span>
+              ${v !== null ? `<span>V: <span class="font-medium text-base-content">${v >= 1000 ? (v/1000).toFixed(2) + 'K' : formatNum(v)}</span></span>` : ''}
+            </div>
+          `;
+        } else {
+          legendRef.current.style.display = 'none';
+        }
+      }
+    });
+
     // Apply data immediately if already available
     updateChartData(data);
 
@@ -118,48 +218,21 @@ export default function ChartWidget({ data, activeIndicators }) {
       chartRef.current = null;
       seriesRef.current = {};
     };
-  }, [activeIndicators]); // Note: data is explicitly NOT in this dependency array
-
+  }, [activeIndicators, chartType, updateChartData, data]);
 
   // 2. Data Population - only update series via setData when data changes
   useEffect(() => {
     updateChartData(data);
-  }, [data]);
+  }, [data, updateChartData]);
 
-  function updateChartData(chartData) {
-    if (!chartData || chartData.length === 0 || !seriesRef.current.candlestickSeries) return;
-
-    const s = seriesRef.current;
-
-    s.candlestickSeries.setData(chartData.map(d => ({ time: d.time, open: d.open, high: d.high, low: d.low, close: d.close })));
-
-    if (s.volumeSeries) {
-      s.volumeSeries.setData(chartData.map(d => ({ time: d.time, value: d.volume, color: d.close > d.open ? 'rgba(16, 185, 129, 0.4)' : 'rgba(239, 68, 68, 0.4)' })));
-    }
-
-    if (activeIndicators.includes('EMA')) {
-      s.overlaySeries[0].setData(chartData.map(d => ({ time: d.time, value: d.ema20 })).filter(d => d.value != null && !isNaN(d.value)));
-      s.overlaySeries[1].setData(chartData.map(d => ({ time: d.time, value: d.ema50 })).filter(d => d.value != null && !isNaN(d.value)));
-      s.overlaySeries[2].setData(chartData.map(d => ({ time: d.time, value: d.ema100 })).filter(d => d.value != null && !isNaN(d.value)));
-    }
-    
-    let maOffset = activeIndicators.includes('EMA') ? 3 : 0;
-    if (activeIndicators.includes('MA')) {
-      s.overlaySeries[maOffset].setData(chartData.map(d => ({ time: d.time, value: d.ma7 })).filter(d => d.value != null && !isNaN(d.value)));
-      s.overlaySeries[maOffset + 1].setData(chartData.map(d => ({ time: d.time, value: d.ma50 })).filter(d => d.value != null && !isNaN(d.value)));
-      s.overlaySeries[maOffset + 2].setData(chartData.map(d => ({ time: d.time, value: d.ma100 })).filter(d => d.value != null && !isNaN(d.value)));
-    }
-
-    if (s.rsiSeries) {
-      s.rsiSeries.setData(chartData.map(d => ({ time: d.time, value: d.rsi14 })).filter(d => d.value != null && !isNaN(d.value)));
-    }
-
-    if (s.macdLine && s.macdSignal && s.macdHist) {
-      s.macdLine.setData(chartData.map(d => ({ time: d.time, value: d.macdLine })).filter(d => d.value != null && !isNaN(d.value)));
-      s.macdSignal.setData(chartData.map(d => ({ time: d.time, value: d.macdSignal })).filter(d => d.value != null && !isNaN(d.value)));
-      s.macdHist.setData(chartData.map(d => ({ time: d.time, value: d.macdHist, color: d.macdHist > 0 ? 'rgba(16, 185, 129, 0.5)' : 'rgba(239, 68, 68, 0.5)' })).filter(d => d.value != null && !isNaN(d.value)));
-    }
-  }
-
-  return <div ref={chartContainerRef} className="w-full h-full min-h-[500px] lg:min-h-[600px]" />;
+  return (
+    <div className="relative w-full h-full min-h-[500px] lg:min-h-[600px]">
+      <div 
+        ref={legendRef} 
+        className="absolute top-2 left-4 z-20 flex text-[11px] md:text-xs text-base-content/70 bg-base-200/90 backdrop-blur-md px-2 py-1.5 rounded-lg border border-base-300 shadow-sm pointer-events-none transition-opacity duration-150"
+        style={{ display: 'none' }}
+      ></div>
+      <div ref={chartContainerRef} className="w-full h-full absolute inset-0" />
+    </div>
+  );
 }
