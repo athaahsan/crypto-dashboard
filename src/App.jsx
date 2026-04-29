@@ -137,7 +137,7 @@ function App() {
                 <select
                   value={symbol}
                   onChange={(e) => setSymbol(e.target.value)}
-                  className="select select-sm bg-base-200 border-none focus:outline-none text-sm font-bold flex-1 rounded-lg min-w-0"
+                  className="select select-lg bg-base-200 border-none focus:outline-none text-sm font-bold flex-1 rounded-lg min-w-0"
                 >
                   {CRYPTO_OPTIONS.map(opt => <option key={opt} value={opt}>{opt.replace('USDT', '')}</option>)}
                 </select>
@@ -145,7 +145,7 @@ function App() {
                 <select
                   value={interval}
                   onChange={(e) => setInterval(e.target.value)}
-                  className="select select-sm bg-base-200 border-none focus:outline-none text-sm font-medium flex-1 rounded-lg min-w-0"
+                  className="select select-lg bg-base-200 border-none focus:outline-none text-sm font-medium flex-1 rounded-lg min-w-0"
                 >
                   {INTERVAL_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                 </select>
@@ -153,7 +153,7 @@ function App() {
                 <select
                   value={chartType}
                   onChange={(e) => setChartType(e.target.value)}
-                  className="select select-sm bg-base-200 border-none focus:outline-none text-sm font-medium flex-1 rounded-lg min-w-0"
+                  className="select select-lg bg-base-200 border-none focus:outline-none text-sm font-medium flex-1 rounded-lg min-w-0"
                 >
                   {CHART_TYPE_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                 </select>
