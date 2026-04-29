@@ -24,6 +24,7 @@ const syntaxHighlight = (json) => {
 
 export default function AiInsightPanel({ payload, symbol }) {
   const [insight, setInsight] = useState(null);
+  const [insightSymbol, setInsightSymbol] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('insight'); // 'insight' | 'payload'
@@ -48,6 +49,7 @@ export default function AiInsightPanel({ payload, symbol }) {
       if (data.choices && data.choices.length > 0) {
         const content = data.choices[0].message.content;
         setInsight(JSON.parse(content));
+        setInsightSymbol(symbol);
         setActiveTab('insight');
       } else {
         throw new Error('Invalid response structure from AI');
@@ -140,6 +142,22 @@ export default function AiInsightPanel({ payload, symbol }) {
 
             {insight && !loading && (
               <div className="space-y-6 flex-1 overflow-y-auto pr-2 custom-scrollbar flex flex-col">
+                
+                {insightSymbol && (
+                  <div className={clsx(
+                    "badge py-3 px-3 gap-1.5 font-bold shadow-sm border",
+                    insightSymbol === symbol 
+                      ? "bg-primary/10 text-primary border-primary/20" 
+                      : "bg-warning/10 text-warning border-warning/20"
+                  )}>
+                    {insightSymbol === symbol ? (
+                      <><Sparkles className="w-3.5 h-3.5" /> Analysis for {insightSymbol}</>
+                    ) : (
+                      <><Info className="w-3.5 h-3.5" /> Showing previous analysis for {insightSymbol}</>
+                    )}
+                  </div>
+                )}
+
                 <div className="space-y-4">
                   <h3 className="text-xs font-bold text-base-content/50 uppercase tracking-wider flex items-center gap-2">
                     <Activity className="w-4 h-4" /> Directional Probability
