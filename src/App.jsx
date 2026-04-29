@@ -175,7 +175,7 @@ function App() {
                       key={opt.value}
                       onClick={() => toggleIndicator(opt.value)}
                       className={clsx(
-                        "btn btn-xs sm:btn-sm border-none font-bold h-8 flex-1 min-w-0 rounded-md transition-all duration-300 relative overflow-hidden",
+                        "btn btn-sm border-none font-bold h-8 flex-1 min-w-0 rounded-md transition-all duration-300 relative overflow-hidden",
                         activeIndicators.includes(opt.value)
                           ? "bg-primary text-primary-content shadow-sm shadow-primary/30 scale-[1.02] z-10"
                           : "bg-transparent text-base-content/50 hover:bg-base-content/10 hover:text-base-content hover:scale-[1.02]"
