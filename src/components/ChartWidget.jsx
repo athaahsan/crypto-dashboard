@@ -126,9 +126,9 @@ export default function ChartWidget({ data, activeIndicators, chartType = 'candl
       s.overlaySeries.push(chart.addLineSeries({ color: '#8B5CF6', lineWidth: 2, title: 'EMA 100', priceScaleId: 'right' }));
     }
     if (activeIndicators.includes('MA')) {
-      s.overlaySeries.push(chart.addLineSeries({ color: '#FCD34D', lineWidth: 1, title: 'MA 7', priceScaleId: 'right', lineStyle: 2 }));
-      s.overlaySeries.push(chart.addLineSeries({ color: '#67E8F9', lineWidth: 1, title: 'MA 50', priceScaleId: 'right', lineStyle: 2 }));
-      s.overlaySeries.push(chart.addLineSeries({ color: '#C4B5FD', lineWidth: 1, title: 'MA 100', priceScaleId: 'right', lineStyle: 2 }));
+      s.overlaySeries.push(chart.addLineSeries({ color: '#FCD34D', lineWidth: 2, title: 'MA 7', priceScaleId: 'right'}));
+      s.overlaySeries.push(chart.addLineSeries({ color: '#67E8F9', lineWidth: 2, title: 'MA 50', priceScaleId: 'right'}));
+      s.overlaySeries.push(chart.addLineSeries({ color: '#C4B5FD', lineWidth: 2, title: 'MA 100', priceScaleId: 'right'}));
     }
 
     // --- SUB PANES ---
