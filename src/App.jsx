@@ -98,37 +98,8 @@ function App() {
 
       <main className="max-w-[1600px] mx-auto p-4 md:p-6 space-y-6">
         
-        {/* KPIs using daisyUI stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 animate-fade-in-up animation-delay-100 opacity-0">
-          <MetricCard 
-            title="Current Price" 
-            value={formatPrice(ticker?.lastPrice)} 
-            trend={ticker ? (parseFloat(ticker.priceChangePercent) >= 0 ? 'up' : 'down') : undefined}
-            trendValue={ticker ? `${parseFloat(ticker.priceChangePercent).toFixed(2)}%` : '-'}
-            icon={DollarSign}
-          />
-          <MetricCard 
-            title="24h High" 
-            value={formatPrice(ticker?.highPrice)} 
-            icon={ArrowUpRight}
-          />
-          <MetricCard 
-            title="24h Low" 
-            value={formatPrice(ticker?.lowPrice)} 
-            icon={ArrowDownRight}
-          />
-          <MetricCard 
-            title="Fear & Greed Index" 
-            value={fng ? fng.value : '--'} 
-            subValue={fng ? fng.class : ''}
-            trend={fng ? getFngTrend(fng.value) : undefined}
-            trendValue={fng ? fng.class : ''}
-            icon={Gauge}
-          />
-        </div>
-
-        {/* Main Workspace */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 h-auto animate-fade-in-up animation-delay-200 opacity-0">
+        {/* Top Section: Chart and KPIs */}
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 h-auto animate-fade-in-up animation-delay-100 opacity-0">
           
           {/* Chart Area */}
           <div className="xl:col-span-2 bg-base-200 border border-base-300 rounded-2xl p-2 shadow-sm flex flex-col gap-2 relative overflow-hidden min-h-[500px]">
@@ -200,11 +171,40 @@ function App() {
             )}
           </div>
 
-          {/* AI Panel Area */}
-          <div className="xl:col-span-1 flex flex-col min-h-[500px] xl:h-[700px]">
-            <AiInsightPanel payload={payload} symbol={symbol.replace('USDT', '')} />
+          {/* KPIs Area */}
+          <div className="xl:col-span-1 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 gap-4 lg:gap-6">
+            <MetricCard 
+              title="Current Price" 
+              value={formatPrice(ticker?.lastPrice)} 
+              trend={ticker ? (parseFloat(ticker.priceChangePercent) >= 0 ? 'up' : 'down') : undefined}
+              trendValue={ticker ? `${parseFloat(ticker.priceChangePercent).toFixed(2)}%` : '-'}
+              icon={DollarSign}
+            />
+            <MetricCard 
+              title="24h High" 
+              value={formatPrice(ticker?.highPrice)} 
+              icon={ArrowUpRight}
+            />
+            <MetricCard 
+              title="24h Low" 
+              value={formatPrice(ticker?.lowPrice)} 
+              icon={ArrowDownRight}
+            />
+            <MetricCard 
+              title="Fear & Greed Index" 
+              value={fng ? fng.value : '--'} 
+              subValue={fng ? fng.class : ''}
+              trend={fng ? getFngTrend(fng.value) : undefined}
+              trendValue={fng ? fng.class : ''}
+              icon={Gauge}
+            />
           </div>
 
+        </div>
+
+        {/* AI Panel Area */}
+        <div className="w-full flex flex-col min-h-[500px] animate-fade-in-up animation-delay-200 opacity-0">
+          <AiInsightPanel payload={payload} symbol={symbol.replace('USDT', '')} />
         </div>
         
       </main>
