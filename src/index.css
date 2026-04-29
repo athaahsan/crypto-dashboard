@@ -1,6 +1,7 @@
 @import "tailwindcss";
-@plugin "daisyui/index.js";
-
+@plugin "daisyui" {
+  themes: all;
+}
 @theme {
   --animate-fade-in-up: fade-in-up 0.5s ease-out forwards;
   
