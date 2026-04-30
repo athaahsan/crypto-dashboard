@@ -60,8 +60,17 @@ export async function fetchATH(symbol) {
   const res = await fetch(url);
   const data = await res.json();
   if (!Array.isArray(data) || data.length === 0) return null;
-  // k[2] = high price
-  return Math.max(...data.map(k => parseFloat(k[2])));
+  
+  let maxPrice = 0;
+  let maxTime = 0;
+  for (const k of data) {
+    const high = parseFloat(k[2]);
+    if (high > maxPrice) {
+      maxPrice = high;
+      maxTime = k[0];
+    }
+  }
+  return { price: maxPrice, date: maxTime };
 }
 
 export async function fetchNews() {

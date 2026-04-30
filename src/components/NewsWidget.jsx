@@ -5,7 +5,7 @@ export default function NewsWidget({ news }) {
   if (!news || news.length === 0) return null;
 
   return (
-    <div className="bg-base-200 border border-base-300 rounded-2xl shadow-sm p-4 flex flex-col h-[400px] xl:h-[500px] relative overflow-hidden">
+    <div className="bg-base-200 border border-base-300 rounded-2xl shadow-sm p-4 flex flex-col h-full min-h-0 relative overflow-hidden">
       <div className="flex items-center gap-2 mb-4 shrink-0">
         <div className="bg-primary/10 p-2 rounded-lg text-primary">
           <Newspaper className="w-5 h-5" />

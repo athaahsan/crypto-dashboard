@@ -101,22 +101,22 @@ function App() {
       <main className="max-w-[1600px] mx-auto p-4 md:p-6 space-y-6">
 
         {/* Main Content Area */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6 animate-fade-in-up animation-delay-100 opacity-0">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 animate-fade-in-up animation-delay-100 opacity-0">
 
           {/* Left Column: Chart & KPI */}
-          <div className="lg:col-span-2 xl:col-span-3 flex flex-col gap-4">
+          <div className="md:col-span-2 xl:col-span-3 flex flex-col gap-4">
             {/* Chart Area */}
-            <div className="w-full bg-base-200 border border-base-300 rounded-2xl p-2 shadow-sm flex flex-col gap-2 relative overflow-hidden h-[540px]">
+            <div className="w-full bg-base-200 border border-base-300 rounded-2xl p-2 shadow-sm flex flex-col gap-2 relative overflow-hidden h-[590px]">
 
               {/* Chart Controls Header */}
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 bg-base-100 p-2 rounded-xl border border-base-300 w-full">
 
                 {/* Left side: Symbol and Interval */}
-                <div className="flex items-center gap-2 w-full md:w-1/2">
+                <div className="flex items-center gap-2 w-full lg:w-1/2">
                   <select
                     value={symbol}
                     onChange={(e) => setSymbol(e.target.value)}
-                    className="select select-sm md:select-lg bg-base-200 border-none focus:outline-none text-sm font-bold flex-1 rounded-lg min-w-0"
+                    className="select select-sm md:select-md bg-base-200 border-none focus:outline-none text-sm font-bold flex-1 rounded-lg min-w-0"
                   >
                     {CRYPTO_OPTIONS.map(opt => <option key={opt} value={opt}>{opt.replace('USDT', '')}</option>)}
                   </select>
@@ -124,7 +124,7 @@ function App() {
                   <select
                     value={interval}
                     onChange={(e) => setInterval(e.target.value)}
-                    className="select select-sm md:select-lg bg-base-200 border-none focus:outline-none text-sm font-medium flex-1 rounded-lg min-w-0"
+                    className="select select-sm md:select-md bg-base-200 border-none focus:outline-none text-sm font-medium flex-1 rounded-lg min-w-0"
                   >
                     {INTERVAL_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                   </select>
@@ -132,14 +132,14 @@ function App() {
                   <select
                     value={chartType}
                     onChange={(e) => setChartType(e.target.value)}
-                    className="select select-sm md:select-lg bg-base-200 border-none focus:outline-none text-sm font-medium flex-1 rounded-lg min-w-0"
+                    className="select select-sm md:select-md bg-base-200 border-none focus:outline-none text-sm font-medium flex-1 rounded-lg min-w-0"
                   >
                     {CHART_TYPE_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                   </select>
                 </div>
 
                 {/* Right side: Overlays */}
-                <div className="flex items-center gap-1 bg-base-200 p-1 rounded-lg w-full md:w-1/2">
+                <div className="flex items-center gap-1 bg-base-200 p-1 rounded-lg w-full lg:w-1/2">
                   <div className="px-2 flex items-center gap-1.5 shrink-0">
                     <Layers className="w-4 h-4 text-base-content/70" />
                     <span className="text-[10px] font-bold text-base-content/70 uppercase tracking-wider hidden sm:block">Overlays</span>
@@ -150,7 +150,7 @@ function App() {
                         key={opt.value}
                         onClick={() => toggleIndicator(opt.value)}
                         className={clsx(
-                          "btn btn-sm border-none font-bold h-7 md:h-8 flex-1 min-w-0 rounded-md transition-all duration-300 relative overflow-hidden",
+                          "btn btn-xs border-none font-bold h-6 flex-1 min-w-0 rounded-md transition-all duration-300 relative overflow-hidden",
                           activeIndicators.includes(opt.value)
                             ? "bg-primary text-primary-content shadow-sm shadow-primary/30 scale-[1.02] z-10"
                             : "bg-transparent text-base-content/50 hover:bg-base-content/10 hover:text-base-content hover:scale-[1.02]"
@@ -173,10 +173,8 @@ function App() {
                   <ChartWidget data={data} activeIndicators={activeIndicators} chartType={chartType} />
                 </div>
               )}
-            </div>
 
-            {/* KPI Ribbon Below Chart */}
-            <div className="w-full">
+              {/* KPI Ribbon Below Chart */}
               <KpiRibbon
                 ticker={ticker}
                 ath={ath}
@@ -187,17 +185,19 @@ function App() {
           </div>
 
           {/* Right Column: Fear & Greed */}
-          <div className="lg:col-span-1 xl:col-span-1">
+          <div className="md:col-span-1 xl:col-span-1">
             <FngWidget fngHistory={fng} getFngTrend={getFngTrend} />
           </div>
 
           {/* News Area */}
-          <div className="lg:col-span-1 xl:col-span-2 flex flex-col min-h-0 animate-fade-in-up animation-delay-200 opacity-0">
-            <NewsWidget news={news} />
+          <div className="md:col-span-1 xl:col-span-2 relative h-[400px] md:h-auto animate-fade-in-up animation-delay-200 opacity-0">
+            <div className="md:absolute md:inset-0 h-full">
+              <NewsWidget news={news} />
+            </div>
           </div>
 
           {/* AI Panel Area */}
-          <div className="lg:col-span-2 xl:col-span-2 animate-fade-in-up animation-delay-300 opacity-0">
+          <div className="md:col-span-2 xl:col-span-2 animate-fade-in-up animation-delay-300 opacity-0">
             <AiInsightPanel payload={payload} symbol={symbol.replace('USDT', '')} />
           </div>
 

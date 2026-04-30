@@ -25,6 +25,7 @@ const syntaxHighlight = (json) => {
 export default function AiInsightPanel({ payload, symbol }) {
   const [insight, setInsight] = useState(null);
   const [insightSymbol, setInsightSymbol] = useState(null);
+  const [insightInterval, setInsightInterval] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('insight'); // 'insight' | 'payload'
@@ -50,6 +51,7 @@ export default function AiInsightPanel({ payload, symbol }) {
         const content = data.choices[0].message.content;
         setInsight(JSON.parse(content));
         setInsightSymbol(symbol);
+        setInsightInterval(payload.timeframe);
         setActiveTab('insight');
       } else {
         throw new Error('Invalid response structure from AI');
@@ -146,14 +148,14 @@ export default function AiInsightPanel({ payload, symbol }) {
                 {insightSymbol && (
                   <div className={clsx(
                     "badge py-3 px-3 gap-1.5 font-bold shadow-sm border",
-                    insightSymbol === symbol 
+                    (insightSymbol === symbol && insightInterval === payload?.timeframe)
                       ? "bg-primary/10 text-primary border-primary/20" 
                       : "bg-warning/10 text-warning border-warning/20"
                   )}>
-                    {insightSymbol === symbol ? (
-                      <><Sparkles className="w-3.5 h-3.5" /> Analysis for {insightSymbol}</>
+                    {(insightSymbol === symbol && insightInterval === payload?.timeframe) ? (
+                      <><Sparkles className="w-3.5 h-3.5" /> Analysis for {insightSymbol} ({insightInterval})</>
                     ) : (
-                      <><Info className="w-3.5 h-3.5" /> Showing previous analysis for {insightSymbol}</>
+                      <><Info className="w-3.5 h-3.5" /> Showing previous analysis for {insightSymbol} ({insightInterval})</>
                     )}
                   </div>
                 )}
