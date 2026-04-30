@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import { TrendingUp, TrendingDown } from 'lucide-react';
 
 const StripItem = ({ title, value, trend, trendValue, isLast, subValue }) => (
-  <div className={clsx("flex items-center gap-1.5 whitespace-nowrap text-xs md:text-sm px-3", !isLast && "border-r border-base-300/50")}>
+  <div className={clsx("flex items-center gap-1.5 whitespace-nowrap text-xs md:text-sm px-4", !isLast && "border-r border-base-300/50")}>
     <span className="font-semibold text-base-content/50 uppercase tracking-wider text-[10px] md:text-[11px]">{title}:</span>
     <span className="font-black">{value}</span>
     {subValue && <span className="text-[10px] md:text-xs text-base-content/40">({subValue})</span>}
