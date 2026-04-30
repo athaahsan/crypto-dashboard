@@ -68,8 +68,9 @@ function App() {
             <BarChart2 className="w-5 h-5 text-primary-content" />
           </div>
           <div className="flex flex-col">
-            <h1 className="text-xl md:text-2xl font-black tracking-tighter leading-none select-none">
-              crypt<span className="text-primary">Dash</span>
+            <h1 className="text-2xl font-black tracking-tighter flex items-baseline select-none">
+              <span className="bg-gradient-to-br from-base-content to-base-content/60 bg-clip-text text-transparent">crypt</span>
+              <span className="bg-gradient-to-br from-primary to-primary/80 bg-clip-text text-transparent">Dash</span>
             </h1>
           </div>
           {/* Connection status badge */}
