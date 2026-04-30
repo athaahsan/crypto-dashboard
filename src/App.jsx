@@ -5,6 +5,7 @@ import AiInsightPanel from './components/AiInsightPanel';
 import KpiRibbon from './components/KpiRibbon';
 import FngWidget from './components/FngWidget';
 import NewsWidget from './components/NewsWidget';
+import Footer from './components/Footer';
 import { Settings, BarChart2, Activity, Zap, Send, Layers } from 'lucide-react';
 import clsx from 'clsx';
 
@@ -204,6 +205,9 @@ function App() {
 
         </div>
       </main>
+
+      {/* Full-width Footer Area */}
+      <Footer />
     </div>
   );
 }
