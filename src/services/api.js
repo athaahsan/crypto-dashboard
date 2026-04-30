@@ -63,3 +63,18 @@ export async function fetchATH(symbol) {
   // k[2] = high price
   return Math.max(...data.map(k => parseFloat(k[2])));
 }
+
+export async function fetchNews() {
+  try {
+    const url = `https://api.coingecko.com/api/v3/news?page=1`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data && Array.isArray(data.data)) {
+      return data.data.slice(0, 10);
+    }
+    return [];
+  } catch (error) {
+    console.error("Error fetching news:", error);
+    return [];
+  }
+}

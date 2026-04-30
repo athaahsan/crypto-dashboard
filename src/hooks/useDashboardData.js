@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { fetchKlines, fetchTicker, fetchFearAndGreed, fetchATH } from '../services/api';
+import { fetchKlines, fetchTicker, fetchFearAndGreed, fetchATH, fetchNews } from '../services/api';
 import { calculateEMA, calculateMA, calculateRSI, calculateMACD, calculateADX, r4 } from '../utils/indicators';
 
 // How often to poll when WebSocket is unavailable (ms)
@@ -10,6 +10,7 @@ export function useDashboardData(symbol, interval) {
   const [ticker, setTicker] = useState(null);
   const [fng, setFng] = useState(null);
   const [ath, setAth] = useState(null);
+  const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [payload, setPayload] = useState(null);
   // true = WebSocket connected, false = polling fallback
@@ -122,11 +123,13 @@ export function useDashboardData(symbol, interval) {
     async function load() {
       setLoading(true);
       try {
-        const [klines, tickerData, fngData, athValue] = await Promise.all([
+        const symbolBase = symbol.replace('USDT', '');
+        const [klines, tickerData, fngData, athValue, newsData] = await Promise.all([
           fetchKlines(symbol, interval, 300),
           fetchTicker(symbol),
           fetchFearAndGreed(),
           fetchATH(symbol),
+          fetchNews(symbolBase)
         ]);
 
         // If the effect was cleaned up while we were awaiting, bail out
@@ -138,6 +141,7 @@ export function useDashboardData(symbol, interval) {
         setTicker(tickerData);
         setFng(fngData);
         setAth(athValue);
+        setNews(newsData);
 
         processData(klines, fngData);
 
@@ -242,5 +246,5 @@ export function useDashboardData(symbol, interval) {
     };
   }, [symbol, interval]);
 
-  return { data, ticker, fng, ath, loading, payload, isLive };
+  return { data, ticker, fng, ath, news, loading, payload, isLive };
 }

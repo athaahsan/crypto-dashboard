@@ -4,6 +4,7 @@ import ChartWidget from './components/ChartWidget';
 import AiInsightPanel from './components/AiInsightPanel';
 import KpiRibbon from './components/KpiRibbon';
 import FngWidget from './components/FngWidget';
+import NewsWidget from './components/NewsWidget';
 import { Settings, BarChart2, Activity, Zap, Send, Layers } from 'lucide-react';
 import clsx from 'clsx';
 
@@ -38,7 +39,7 @@ function App() {
     document.documentElement.setAttribute('data-theme', 'dark'); // Built-in sleek dark theme
   }, []);
 
-  const { data, ticker, fng, ath, loading, payload, isLive } = useDashboardData(symbol, interval);
+  const { data, ticker, fng, ath, news, loading, payload, isLive } = useDashboardData(symbol, interval);
 
   const formatPrice = (price) => {
     if (!price) return '$0.00';
@@ -190,8 +191,13 @@ function App() {
             <FngWidget fngHistory={fng} getFngTrend={getFngTrend} />
           </div>
 
+          {/* News Area */}
+          <div className="lg:col-span-1 xl:col-span-2 flex flex-col min-h-0 animate-fade-in-up animation-delay-200 opacity-0">
+            <NewsWidget news={news} />
+          </div>
+
           {/* AI Panel Area */}
-          <div className="lg:col-span-1 xl:col-span-4 animate-fade-in-up animation-delay-200 opacity-0">
+          <div className="lg:col-span-2 xl:col-span-2 animate-fade-in-up animation-delay-300 opacity-0">
             <AiInsightPanel payload={payload} symbol={symbol.replace('USDT', '')} />
           </div>
 
