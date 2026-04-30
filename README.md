@@ -1,16 +1,29 @@
-# React + Vite
+# cryptDash - Crypto Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, responsive, and feature-rich cryptocurrency dashboard built with React and Tailwind CSS.
 
-Currently, two official plugins are available:
+**🚀 The project is live here:** [https://crypto.athaahsan.com/](https://crypto.athaahsan.com/)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Features
 
-## React Compiler
+- **Live Market Data:** Real-time price updates and candlestick/line charts powered by TradingView's Lightweight Charts and Binance APIs.
+- **AI-Powered Technical Analysis:** On-demand technical insights driven by Gemini 3 Flash via OpenRouter. The AI analyzes current market structure, momentum, and indicators to provide a directional probability and reasoning.
+- **Crypto News Feed:** A scrolling feed of the latest cryptocurrency news aggregated via the CoinGecko API.
+- **Fear & Greed Index:** Real-time tracking of market sentiment (Fear & Greed Index) sourced from Alternative.me, visualized with historical trending dots synced to the chart timeline.
+- **Responsive "Cyber-Glass" UI:** Built with DaisyUI and Tailwind CSS, featuring a sleek, fully responsive grid layout that adapts perfectly from mobile screens to ultrawide desktop monitors.
+- **Dynamic KPI Ribbon:** A stylish terminal-style ribbon displaying real-time Price, All-Time Highs (with dates), and Period High/Low metrics.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tech Stack
 
-## Expanding the ESLint configuration
+- **Frontend:** React, Vite
+- **Styling:** Tailwind CSS, DaisyUI
+- **Icons:** Lucide React
+- **Charting:** `lightweight-charts`
+- **APIs:** Binance (Market Data), Alternative.me (Sentiment), CoinGecko (News), OpenRouter (AI Insights)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Getting Started
+
+1. Clone the repository
+2. Install dependencies using `npm install`
+3. Add your OpenRouter API key to your environment variables or Netlify functions
+4. Start the development server with `npm run dev` (or `netlify dev` to test serverless functions locally)
