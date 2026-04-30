@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { fetchKlines, fetchTicker, fetchFearAndGreed } from '../services/api';
+import { fetchKlines, fetchTicker, fetchFearAndGreed, fetchATH } from '../services/api';
 import { calculateEMA, calculateMA, calculateRSI, calculateMACD, calculateADX, r4 } from '../utils/indicators';
 
 // How often to poll when WebSocket is unavailable (ms)
@@ -9,6 +9,7 @@ export function useDashboardData(symbol, interval) {
   const [data, setData] = useState(null);
   const [ticker, setTicker] = useState(null);
   const [fng, setFng] = useState(null);
+  const [ath, setAth] = useState(null);
   const [loading, setLoading] = useState(true);
   const [payload, setPayload] = useState(null);
   // true = WebSocket connected, false = polling fallback
@@ -96,8 +97,8 @@ export function useDashboardData(symbol, interval) {
         positive_di_14: r4(plusDi[plusDi.length - 1]),
         negative_di_14: r4(minusDi[minusDi.length - 1]),
         di_delta_14: r4(plusDi[plusDi.length - 1] - minusDi[minusDi.length - 1]),
-        crypto_fng_value: fngData?.value,
-        crypto_fng_class: fngData?.class
+        crypto_fng_value: fngData && fngData.length > 0 ? fngData[fngData.length - 1].value : undefined,
+        crypto_fng_class: fngData && fngData.length > 0 ? fngData[fngData.length - 1].class : undefined
       };
 
       const chartData = klines.map((k, i) => ({
@@ -121,10 +122,11 @@ export function useDashboardData(symbol, interval) {
     async function load() {
       setLoading(true);
       try {
-        const [klines, tickerData, fngData] = await Promise.all([
+        const [klines, tickerData, fngData, athValue] = await Promise.all([
           fetchKlines(symbol, interval, 300),
           fetchTicker(symbol),
-          fetchFearAndGreed()
+          fetchFearAndGreed(),
+          fetchATH(symbol),
         ]);
 
         // If the effect was cleaned up while we were awaiting, bail out
@@ -135,6 +137,7 @@ export function useDashboardData(symbol, interval) {
         fngRef.current = fngData;
         setTicker(tickerData);
         setFng(fngData);
+        setAth(athValue);
 
         processData(klines, fngData);
 
@@ -239,5 +242,5 @@ export function useDashboardData(symbol, interval) {
     };
   }, [symbol, interval]);
 
-  return { data, ticker, fng, loading, payload, isLive };
+  return { data, ticker, fng, ath, loading, payload, isLive };
 }

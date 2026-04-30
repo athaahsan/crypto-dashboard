@@ -182,3 +182,7 @@
     border-right-color: var(--border);
   }
 }
+
+.tv-lightweight-charts-logo {
+  display: none !important;
+}

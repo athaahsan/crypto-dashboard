@@ -39,15 +39,27 @@ export async function fetchTicker(symbol) {
   return res.json();
 }
 
-export async function fetchFearAndGreed() {
-  const url = "https://api.alternative.me/fng/?limit=1&format=json";
+export async function fetchFearAndGreed(limit = 30) {
+  const url = `https://api.alternative.me/fng/?limit=${limit}&format=json`;
   const res = await fetch(url);
   const data = await res.json();
   if (data && data.data && data.data.length > 0) {
-    return {
-      value: parseInt(data.data[0].value),
-      class: data.data[0].value_classification
-    };
+    return data.data.map(d => ({
+      value: parseInt(d.value),
+      class: d.value_classification,
+      time: parseInt(d.timestamp)
+    })).reverse(); // chronological order
   }
-  return { value: 50, class: "Neutral" };
+  return [];
+}
+
+export async function fetchATH(symbol) {
+  // Pull up to 1000 monthly candles — covers all of Binance history (≈2017–present).
+  // The highest 'high' across all months is used as the ATH.
+  const url = `https://data-api.binance.vision/api/v3/klines?symbol=${symbol}&interval=1M&limit=1000`;
+  const res = await fetch(url);
+  const data = await res.json();
+  if (!Array.isArray(data) || data.length === 0) return null;
+  // k[2] = high price
+  return Math.max(...data.map(k => parseFloat(k[2])));
 }

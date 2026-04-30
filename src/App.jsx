@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useDashboardData } from './hooks/useDashboardData';
 import ChartWidget from './components/ChartWidget';
 import AiInsightPanel from './components/AiInsightPanel';
-import MetricCard from './components/MetricCard';
-import { Settings, BarChart2, Activity, Zap, Send, Layers, DollarSign, ArrowUpRight, ArrowDownRight, Gauge } from 'lucide-react';
+import KpiRibbon from './components/KpiRibbon';
+import FngWidget from './components/FngWidget';
+import { Settings, BarChart2, Activity, Zap, Send, Layers } from 'lucide-react';
 import clsx from 'clsx';
 
 const CRYPTO_OPTIONS = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "XRPUSDT", "ADAUSDT"];
@@ -37,7 +38,7 @@ function App() {
     document.documentElement.setAttribute('data-theme', 'dark'); // Built-in sleek dark theme
   }, []);
 
-  const { data, ticker, fng, loading, payload, isLive } = useDashboardData(symbol, interval);
+  const { data, ticker, fng, ath, loading, payload, isLive } = useDashboardData(symbol, interval);
 
   const formatPrice = (price) => {
     if (!price) return '$0.00';
@@ -52,7 +53,7 @@ function App() {
   };
 
   const toggleIndicator = (val) => {
-    setActiveIndicators(prev => 
+    setActiveIndicators(prev =>
       prev.includes(val) ? prev.filter(i => i !== val) : [...prev, val]
     );
   };
@@ -97,116 +98,104 @@ function App() {
       </div>
 
       <main className="max-w-[1600px] mx-auto p-4 md:p-6 space-y-6">
-        
-        {/* Top Section: Chart and KPIs */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 h-auto animate-fade-in-up animation-delay-100 opacity-0">
-          
-          {/* Chart Area */}
-          <div className="xl:col-span-2 bg-base-200 border border-base-300 rounded-2xl p-2 shadow-sm flex flex-col gap-2 relative overflow-hidden min-h-[500px]">
-            
-            {/* Chart Controls Header */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 bg-base-100 p-2 rounded-xl border border-base-300 w-full">
-              
-              {/* Left side: Symbol and Interval */}
-              <div className="flex items-center gap-2 w-full md:w-1/2">
-                <select
-                  value={symbol}
-                  onChange={(e) => setSymbol(e.target.value)}
-                  className="select select-md md:select-lg bg-base-200 border-none focus:outline-none text-sm font-bold flex-1 rounded-lg min-w-0"
-                >
-                  {CRYPTO_OPTIONS.map(opt => <option key={opt} value={opt}>{opt.replace('USDT', '')}</option>)}
-                </select>
-                
-                <select
-                  value={interval}
-                  onChange={(e) => setInterval(e.target.value)}
-                  className="select select-md md:select-lg bg-base-200 border-none focus:outline-none text-sm font-medium flex-1 rounded-lg min-w-0"
-                >
-                  {INTERVAL_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-                </select>
 
-                <select
-                  value={chartType}
-                  onChange={(e) => setChartType(e.target.value)}
-                  className="select select-md md:select-lg bg-base-200 border-none focus:outline-none text-sm font-medium flex-1 rounded-lg min-w-0"
-                >
-                  {CHART_TYPE_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-                </select>
+        {/* Main Content Area */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6 animate-fade-in-up animation-delay-100 opacity-0">
+
+          {/* Left Column: Chart & KPI */}
+          <div className="lg:col-span-2 xl:col-span-3 flex flex-col gap-4">
+            {/* Chart Area */}
+            <div className="w-full bg-base-200 border border-base-300 rounded-2xl p-2 shadow-sm flex flex-col gap-2 relative overflow-hidden h-[540px]">
+
+              {/* Chart Controls Header */}
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 bg-base-100 p-2 rounded-xl border border-base-300 w-full">
+
+                {/* Left side: Symbol and Interval */}
+                <div className="flex items-center gap-2 w-full md:w-1/2">
+                  <select
+                    value={symbol}
+                    onChange={(e) => setSymbol(e.target.value)}
+                    className="select select-sm md:select-lg bg-base-200 border-none focus:outline-none text-sm font-bold flex-1 rounded-lg min-w-0"
+                  >
+                    {CRYPTO_OPTIONS.map(opt => <option key={opt} value={opt}>{opt.replace('USDT', '')}</option>)}
+                  </select>
+
+                  <select
+                    value={interval}
+                    onChange={(e) => setInterval(e.target.value)}
+                    className="select select-sm md:select-lg bg-base-200 border-none focus:outline-none text-sm font-medium flex-1 rounded-lg min-w-0"
+                  >
+                    {INTERVAL_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                  </select>
+
+                  <select
+                    value={chartType}
+                    onChange={(e) => setChartType(e.target.value)}
+                    className="select select-sm md:select-lg bg-base-200 border-none focus:outline-none text-sm font-medium flex-1 rounded-lg min-w-0"
+                  >
+                    {CHART_TYPE_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                  </select>
+                </div>
+
+                {/* Right side: Overlays */}
+                <div className="flex items-center gap-1 bg-base-200 p-1 rounded-lg w-full md:w-1/2">
+                  <div className="px-2 flex items-center gap-1.5 shrink-0">
+                    <Layers className="w-4 h-4 text-base-content/70" />
+                    <span className="text-[10px] font-bold text-base-content/70 uppercase tracking-wider hidden sm:block">Overlays</span>
+                  </div>
+                  <div className="flex flex-1 w-full p-1 rounded-lg shadow-inner gap-1">
+                    {INDICATOR_OPTIONS.map((opt) => (
+                      <button
+                        key={opt.value}
+                        onClick={() => toggleIndicator(opt.value)}
+                        className={clsx(
+                          "btn btn-sm border-none font-bold h-7 md:h-8 flex-1 min-w-0 rounded-md transition-all duration-300 relative overflow-hidden",
+                          activeIndicators.includes(opt.value)
+                            ? "bg-primary text-primary-content shadow-sm shadow-primary/30 scale-[1.02] z-10"
+                            : "bg-transparent text-base-content/50 hover:bg-base-content/10 hover:text-base-content hover:scale-[1.02]"
+                        )}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
 
-              {/* Right side: Overlays */}
-              <div className="flex items-center gap-1 bg-base-200 p-1 rounded-lg w-full md:w-1/2">
-                <div className="px-2 flex items-center gap-1.5 shrink-0">
-                  <Layers className="w-4 h-4 text-base-content/70" />
-                  <span className="text-[10px] font-bold text-base-content/70 uppercase tracking-wider hidden sm:block">Overlays</span>
+              {loading ? (
+                <div className="flex-1 flex flex-col items-center justify-center gap-4 bg-base-100 rounded-xl">
+                  <span className="loading loading-spinner loading-lg text-primary"></span>
+                  <p className="text-sm font-medium text-base-content/60">Syncing market data...</p>
                 </div>
-                <div className="flex flex-1 w-full p-1 rounded-lg shadow-inner gap-1">
-                  {INDICATOR_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.value}
-                      onClick={() => toggleIndicator(opt.value)}
-                      className={clsx(
-                        "btn btn-sm border-none font-bold h-8 flex-1 min-w-0 rounded-md transition-all duration-300 relative overflow-hidden",
-                        activeIndicators.includes(opt.value)
-                          ? "bg-primary text-primary-content shadow-sm shadow-primary/30 scale-[1.02] z-10"
-                          : "bg-transparent text-base-content/50 hover:bg-base-content/10 hover:text-base-content hover:scale-[1.02]"
-                      )}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
+              ) : (
+                <div className="flex-1 w-full rounded-xl overflow-hidden bg-base-100">
+                  <ChartWidget data={data} activeIndicators={activeIndicators} chartType={chartType} />
                 </div>
-              </div>
+              )}
             </div>
 
-            {loading ? (
-              <div className="flex-1 flex flex-col items-center justify-center gap-4 bg-base-100 rounded-xl">
-                <span className="loading loading-spinner loading-lg text-primary"></span>
-                <p className="text-sm font-medium text-base-content/60">Syncing market data...</p>
-              </div>
-            ) : (
-              <div className="flex-1 w-full rounded-xl overflow-hidden bg-base-100">
-                <ChartWidget data={data} activeIndicators={activeIndicators} chartType={chartType} />
-              </div>
-            )}
+            {/* KPI Ribbon Below Chart */}
+            <div className="w-full">
+              <KpiRibbon
+                ticker={ticker}
+                ath={ath}
+                data={data}
+                formatPrice={formatPrice}
+              />
+            </div>
           </div>
 
-          {/* KPIs Area */}
-          <div className="xl:col-span-1 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 gap-4 lg:gap-6">
-            <MetricCard 
-              title="Current Price" 
-              value={formatPrice(ticker?.lastPrice)} 
-              trend={ticker ? (parseFloat(ticker.priceChangePercent) >= 0 ? 'up' : 'down') : undefined}
-              trendValue={ticker ? `${parseFloat(ticker.priceChangePercent).toFixed(2)}%` : '-'}
-              icon={DollarSign}
-            />
-            <MetricCard 
-              title="24h High" 
-              value={formatPrice(ticker?.highPrice)} 
-              icon={ArrowUpRight}
-            />
-            <MetricCard 
-              title="24h Low" 
-              value={formatPrice(ticker?.lowPrice)} 
-              icon={ArrowDownRight}
-            />
-            <MetricCard 
-              title="Fear & Greed Index" 
-              value={fng ? fng.value : '--'} 
-              subValue={fng ? fng.class : ''}
-              trend={fng ? getFngTrend(fng.value) : undefined}
-              trendValue={fng ? fng.class : ''}
-              icon={Gauge}
-            />
+          {/* Right Column: Fear & Greed */}
+          <div className="lg:col-span-1 xl:col-span-1">
+            <FngWidget fngHistory={fng} getFngTrend={getFngTrend} />
+          </div>
+
+          {/* AI Panel Area */}
+          <div className="lg:col-span-1 xl:col-span-4 animate-fade-in-up animation-delay-200 opacity-0">
+            <AiInsightPanel payload={payload} symbol={symbol.replace('USDT', '')} />
           </div>
 
         </div>
-
-        {/* AI Panel Area */}
-        <div className="w-full flex flex-col min-h-[500px] animate-fade-in-up animation-delay-200 opacity-0">
-          <AiInsightPanel payload={payload} symbol={symbol.replace('USDT', '')} />
-        </div>
-        
       </main>
     </div>
   );

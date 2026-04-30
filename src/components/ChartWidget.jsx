@@ -226,7 +226,7 @@ export default function ChartWidget({ data, activeIndicators, chartType = 'candl
   }, [data, updateChartData]);
 
   return (
-    <div className="relative w-full h-full min-h-[400px] lg:min-h-[500px]">
+    <div className="relative w-full h-full">
       <div 
         ref={legendRef} 
         className="absolute top-2 left-4 z-20 flex text-[11px] md:text-xs text-base-content/70 bg-base-200/90 backdrop-blur-md px-2 py-1.5 rounded-lg border border-base-300 shadow-sm pointer-events-none transition-opacity duration-150"
