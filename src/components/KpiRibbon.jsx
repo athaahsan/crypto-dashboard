@@ -23,8 +23,28 @@ const StripItem = ({ title, value, trend, trendValue, isLast, subValue }) => (
 
 export default function KpiRibbon({ ticker, ath, data, formatPrice }) {
   const currentPrice = formatPrice(ticker?.lastPrice);
-  const currentTrend = ticker ? (parseFloat(ticker.priceChangePercent) >= 0 ? 'up' : 'down') : undefined;
-  const currentTrendValue = ticker ? `${parseFloat(ticker.priceChangePercent).toFixed(2)}% (24h)` : '-';
+
+  const todayOpen = data ? (() => {
+    const now = new Date();
+    const startOfTodayUTC = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()) / 1000;
+    const todayCandles = data.filter(c => c.time >= startOfTodayUTC);
+    if (todayCandles.length > 0) return todayCandles[0].open;
+    return null;
+  })() : null;
+
+  let currentTrend = undefined;
+  let currentTrendValue = '-';
+
+  if (ticker && todayOpen) {
+    const currentPriceNum = parseFloat(ticker.lastPrice);
+    const percentChange = ((currentPriceNum - todayOpen) / todayOpen) * 100;
+    currentTrend = percentChange >= 0 ? 'up' : 'down';
+    currentTrendValue = `${percentChange > 0 ? '+' : ''}${percentChange.toFixed(2)}% (Today)`;
+  } else if (ticker) {
+    const percentChange = parseFloat(ticker.priceChangePercent);
+    currentTrend = percentChange >= 0 ? 'up' : 'down';
+    currentTrendValue = `${percentChange > 0 ? '+' : ''}${percentChange.toFixed(2)}% (24h)`;
+  }
 
   const athPriceNum = ath?.price || ath; // fallback if ath is just a number
   const athPrice = athPriceNum ? formatPrice(athPriceNum) : '--';
@@ -34,14 +54,14 @@ export default function KpiRibbon({ ticker, ath, data, formatPrice }) {
 
   const periodHigh = formatPrice(data?.[data.length - 1]?.high);
   const periodLow = formatPrice(data?.[data.length - 1]?.low);
-  
+
   return (
     <div className="bg-base-100 border border-base-300 rounded-xl overflow-x-auto shrink-0" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
       <div className="flex items-center w-max min-w-full py-2 px-1">
         <StripItem title="Price" value={currentPrice} trend={currentTrend} trendValue={currentTrendValue} />
+        <StripItem title="High" value={periodHigh} />
+        <StripItem title="Low" value={periodLow} isLast={true} />
         <StripItem title="ATH" value={athPrice} subValue={athDateStr} trend={athTrend} trendValue={athTrendValue} />
-        <StripItem title="Period High" value={periodHigh} />
-        <StripItem title="Period Low" value={periodLow} isLast={true} />
       </div>
     </div>
   );

@@ -2,12 +2,15 @@ import React, { useEffect, useRef, useState } from 'react';
 import { createChart } from 'lightweight-charts';
 import { Gauge, TrendingUp, TrendingDown } from 'lucide-react';
 
-function getDotColor(value) {
-  if (value <= 24) return '#EF4444'; // Red (Extreme Fear)
-  if (value <= 45) return '#F59E0B'; // Orange/Yellow (Fear)
-  if (value <= 54) return '#9CA3AF'; // Gray (Neutral)
-  if (value <= 74) return '#10B981'; // Green (Greed)
-  return '#059669'; // Darker Green (Extreme Greed)
+function getDotColor(classification) {
+  switch (classification) {
+    case 'Extreme Fear': return '#EF4444'; // Red
+    case 'Fear': return '#F59E0B'; // Orange/Yellow
+    case 'Neutral': return '#9CA3AF'; // Gray
+    case 'Greed': return '#10B981'; // Green
+    case 'Extreme Greed': return '#059669'; // Darker Green
+    default: return '#9CA3AF';
+  }
 }
 
 export default function FngWidget({ fngHistory, getFngTrend }) {
@@ -66,7 +69,7 @@ export default function FngWidget({ fngHistory, getFngTrend }) {
       const coords = fngHistory.map(d => {
         const x = chart.timeScale().timeToCoordinate(d.time);
         const y = series.priceToCoordinate(d.value);
-        return { x, y, color: getDotColor(d.value) };
+        return { x, y, color: getDotColor(d.class) };
       }).filter(d => d.x !== null && d.y !== null);
       setDotCoords(coords);
     }
@@ -84,7 +87,7 @@ export default function FngWidget({ fngHistory, getFngTrend }) {
     if (chartContainerRef.current) {
       resizeObserver.observe(chartContainerRef.current);
     }
-    
+
     // Subscribe to chart logical range changes to sync dots when internal scaling happens
     chart.timeScale().subscribeVisibleLogicalRangeChange(syncDots);
     chart.timeScale().subscribeSizeChange(syncDots);
@@ -108,11 +111,18 @@ export default function FngWidget({ fngHistory, getFngTrend }) {
 
       <div className="flex flex-col items-center justify-center shrink-0 mb-4 mt-2">
         <div className="flex items-baseline gap-3">
-          <span className="text-4xl lg:text-5xl font-black">{todayFng ? todayFng.value : '--'}</span>
+          <span
+            className="text-4xl lg:text-5xl font-black"
+          >
+            {todayFng ? todayFng.value : '--'}
+          </span>
           <div className="flex items-center gap-1.5">
-            <span className="text-sm lg:text-base font-bold text-base-content/60 uppercase tracking-widest">{todayFng ? todayFng.class : '--'}</span>
-            {trend === 'up' && <TrendingUp className="w-4 h-4 text-success" />}
-            {trend === 'down' && <TrendingDown className="w-4 h-4 text-error" />}
+            <span
+              className="text-xs lg:text-sm font-bold uppercase tracking-widest"
+              style={{ color: todayFng ? getDotColor(todayFng.class) : undefined }}
+            >
+              {todayFng ? todayFng.class : '--'}
+            </span>
           </div>
         </div>
       </div>
@@ -125,7 +135,7 @@ export default function FngWidget({ fngHistory, getFngTrend }) {
             {dotCoords.map((p, i) => {
               const isLast = i === dotCoords.length - 1;
               return (
-                <div 
+                <div
                   key={i}
                   className={`absolute rounded-full ${isLast ? 'animate-pulse' : ''}`}
                   style={{

@@ -142,17 +142,17 @@ function App() {
 
                 {/* Right side: Overlays */}
                 <div className="flex items-center gap-1 bg-base-200 p-1 rounded-lg w-full lg:w-1/2">
-                  <div className="px-2 flex items-center gap-1.5 shrink-0">
+                  <div className="px-2 flex items-center gap-1.5 shrink-0 ">
                     <Layers className="w-4 h-4 text-base-content/70" />
                     <span className="text-[10px] font-bold text-base-content/70 uppercase tracking-wider hidden sm:block">Overlays</span>
                   </div>
-                  <div className="flex flex-1 w-full p-1 rounded-lg shadow-inner gap-1">
+                  <div className="flex flex-1 w-full p-1 rounded-lg gap-1">
                     {INDICATOR_OPTIONS.map((opt) => (
                       <button
                         key={opt.value}
                         onClick={() => toggleIndicator(opt.value)}
                         className={clsx(
-                          "btn btn-xs border-none font-bold h-6 flex-1 min-w-0 rounded-md transition-all duration-300 relative overflow-hidden",
+                          "btn btn-xs font-bold h-6 flex-1 min-w-0 rounded-md transition-all duration-300 relative overflow-hidden",
                           activeIndicators.includes(opt.value)
                             ? "bg-primary text-primary-content shadow-sm shadow-primary/30 scale-[1.02] z-10"
                             : "bg-transparent text-base-content/50 hover:bg-base-content/10 hover:text-base-content hover:scale-[1.02]"
