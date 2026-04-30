@@ -65,7 +65,7 @@ export default function AiInsightPanel({ payload, symbol }) {
   };
 
   return (
-    <div className="bg-base-200 border border-base-300 rounded-2xl h-full flex flex-col overflow-hidden shadow-xl">
+    <div className="bg-base-200 border border-base-300 rounded-2xl h-full flex flex-col overflow-hidden shadow-sm">
       {/* Header Tabs using daisyUI */}
       <div className="tabs tabs-bordered w-full border-b border-base-300 bg-base-300/30 pt-2 px-2">
         <button

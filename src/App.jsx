@@ -65,8 +65,8 @@ function App() {
       {/* Top Navbar */}
       <div className="navbar bg-base-200/80 backdrop-blur-xl sticky top-0 z-50 border-b border-base-300 px-4 md:px-8">
         <div className="flex-1 flex items-center gap-3">
-          <div className="bg-primary rounded-xl p-2 flex items-center justify-center shadow-lg shadow-primary/20">
-            <BarChart2 className="w-5 h-5 text-primary-content" />
+          <div className="bg-gradient-to-br from-primary to-accent rounded-xl p-2 flex items-center justify-center shadow-lg shadow-primary/20">
+            <BarChart2 className="w-5 h-5 text-white" />
           </div>
           <div className="flex flex-col">
             <h1 className="text-2xl font-black tracking-tighter flex items-baseline select-none">
@@ -92,7 +92,7 @@ function App() {
             href="https://t.me/dailybtcinsightbot"
             target="_blank"
             rel="noopener noreferrer"
-            className="btn btn-primary btn-sm md:btn-md rounded-full shadow-lg shadow-primary/20"
+            className="btn btn-primary btn-sm rounded-xl "
           >
             <Send className="w-4 h-4" />
             <span className="hidden sm:inline">Get Daily Signals</span>
