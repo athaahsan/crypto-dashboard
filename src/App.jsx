@@ -30,7 +30,7 @@ function App() {
   const [symbol, setSymbol] = useState("BTCUSDT");
   const [interval, setInterval] = useState("1d");
   const [chartType, setChartType] = useState("candlestick");
-  const [activeIndicators, setActiveIndicators] = useState(['VOL', 'EMA']);
+  const [activeIndicators, setActiveIndicators] = useState(['VOL']);
 
   // DaisyUI specific theme application
   useEffect(() => {
