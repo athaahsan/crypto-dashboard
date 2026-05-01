@@ -27,12 +27,12 @@ export default function CoinSelector({ options, value, onChange }) {
     <div className="relative flex-1 min-w-0" ref={dropdownRef}>
       <button
         onClick={() => { setIsOpen(!isOpen); setSearch(''); }}
-        className="h-8 w-full hover:cursor-pointer text-lg md:text-xl font-bold rounded-lg px-2 flex items-center justify-center gap-1.5 transition-colors"
+        className="h-8 w-full hover:cursor-pointer text-lg sm:text-xl font-bold rounded-lg px-2 flex items-center justify-center gap-1.5 transition-colors"
       >
         <img 
           src={getLogoUrl(value)} 
           alt="" 
-          className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 rounded-full"
+          className="w-4 h-4 sm:w-5 sm:h-5 rounded-full"
           onError={(e) => e.target.style.display = 'none'}
         />
         <span className="truncate">{value.replace('USDT', '')}</span>
