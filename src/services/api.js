@@ -1,6 +1,6 @@
 // src/services/api.js
 
-export async function fetchKlines(symbol, interval = '1d', limit = 300) {
+export async function fetchKlines(symbol, interval = '1d', limit = 1000) {
   // Binance format symbol e.g., BTCUSDT
   const url = `https://data-api.binance.vision/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`;
   const res = await fetch(url);

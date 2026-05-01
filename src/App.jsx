@@ -6,20 +6,39 @@ import KpiRibbon from './components/KpiRibbon';
 import FngWidget from './components/FngWidget';
 import NewsWidget from './components/NewsWidget';
 import Footer from './components/Footer';
-import { Settings, BarChart2, Activity, Zap, Send, Layers } from 'lucide-react';
+import CoinSelector from './components/CoinSelector';
+import { Settings, BarChart2, Activity, Zap, Send, Layers, CandlestickChart, LineChart, AreaChart, ChartColumn } from 'lucide-react';
 import clsx from 'clsx';
 
-const CRYPTO_OPTIONS = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "XRPUSDT", "ADAUSDT"];
+const CRYPTO_OPTIONS = [
+  "BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "XRPUSDT", "ADAUSDT",
+  "DOGEUSDT", "AVAXUSDT", "DOTUSDT", "LINKUSDT", "MATICUSDT", "SHIBUSDT",
+  "LTCUSDT", "BCHUSDT", "UNIUSDT", "ATOMUSDT", "ETCUSDT", "FILUSDT",
+  "NEARUSDT", "APTUSDT", "OPUSDT", "ARBUSDT", "INJUSDT", "RNDRUSDT",
+  "STXUSDT", "FTMUSDT", "SANDUSDT", "MANAUSDT", "GALAUSDT", "SUIUSDT",
+  "SEIUSDT", "TIAUSDT", "PEPEUSDT", "WIFUSDT", "BONKUSDT"
+];
 const INTERVAL_OPTIONS = [
-  { label: 'Daily', value: '1d' },
-  { label: '4 Hours', value: '4h' },
-  { label: '1 Hour', value: '1h' },
+  { label: '1D', value: '1d' },
+  { label: '4H', value: '4h' },
+  { label: '1H', value: '1h' },
 ];
 const CHART_TYPE_OPTIONS = [
-  { label: 'Candles', value: 'candlestick' },
-  { label: 'Line', value: 'line' },
-  { label: 'Area', value: 'area' },
-  { label: 'Bar', value: 'bar' },
+  {
+    label: 'Candles',
+    value: 'candlestick',
+    icon: <CandlestickChart className="w-5 h-5" />
+  },
+  {
+    label: 'Line',
+    value: 'line',
+    icon: <LineChart className="w-5 h-5" />
+  },
+  {
+    label: 'Area',
+    value: 'area',
+    icon: <AreaChart className="w-5 h-5" />
+  },
 ];
 const INDICATOR_OPTIONS = [
   { label: 'VOL', value: 'VOL' },
@@ -70,7 +89,7 @@ function App() {
           </div>
           <div className="flex flex-col">
             <h1 className="text-2xl font-black tracking-tighter flex items-baseline select-none">
-              <span className="bg-gradient-to-br from-base-content to-base-content/60 bg-clip-text text-transparent">crypt</span>
+              <span className="bg-gradient-to-br from-base-content to-base-content/60 bg-clip-text text-transparent">Crypt</span>
               <span className="bg-gradient-to-br from-primary to-primary/80 bg-clip-text text-transparent">Dash</span>
             </h1>
           </div>
@@ -111,33 +130,53 @@ function App() {
             <div className="w-full bg-base-200 border border-base-300 rounded-2xl p-2 shadow-sm flex flex-col gap-2 relative overflow-hidden h-[590px]">
 
               {/* Chart Controls Header */}
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 bg-base-100 p-2 rounded-xl border border-base-300 w-full">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 bg-base-100 p-2 rounded-xl border border-base-300 w-full relative z-30">
 
-                {/* Left side: Symbol and Interval */}
+                {/* Left side: Symbol, Interval, Chart Type */}
                 <div className="flex items-center gap-2 w-full lg:w-1/2">
-                  <select
+                  <CoinSelector
+                    options={CRYPTO_OPTIONS}
                     value={symbol}
-                    onChange={(e) => setSymbol(e.target.value)}
-                    className="select select-sm md:select-md bg-base-200 border-none focus:outline-none text-sm font-bold flex-1 rounded-lg min-w-0"
-                  >
-                    {CRYPTO_OPTIONS.map(opt => <option key={opt} value={opt}>{opt.replace('USDT', '')}</option>)}
-                  </select>
+                    onChange={setSymbol}
+                  />
 
-                  <select
-                    value={interval}
-                    onChange={(e) => setInterval(e.target.value)}
-                    className="select select-sm md:select-md bg-base-200 border-none focus:outline-none text-sm font-medium flex-1 rounded-lg min-w-0"
-                  >
-                    {INTERVAL_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-                  </select>
+                  {/* Interval Segmented Control */}
+                  <div className="flex flex-1 basis-0 min-w-0 h-8 items-center">
+                    {INTERVAL_OPTIONS.map((opt) => (
+                      <button
+                        key={opt.value}
+                        onClick={() => setInterval(opt.value)}
+                        className={clsx(
+                          "shadow-none btn btn-xs md:btn-sm flex-1 min-w-0 border-none font-bold transition-colors duration-300 h-full min-h-0 rounded-none first:rounded-l-lg last:rounded-r-lg",
+                          interval === opt.value
+                            ? "border-solid border-accent/20 bg-accent/20 text-primary-content z-10 hover:bg-accent/30"
+                            : "border-solid bg-base-200 text-base-content/50 hover:text-base-content hover:bg-base-300"
+                        )}
+                        title={opt.label}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
 
-                  <select
-                    value={chartType}
-                    onChange={(e) => setChartType(e.target.value)}
-                    className="select select-sm md:select-md bg-base-200 border-none focus:outline-none text-sm font-medium flex-1 rounded-lg min-w-0"
-                  >
-                    {CHART_TYPE_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-                  </select>
+                  {/* Chart Type Segmented Control */}
+                  <div className="flex flex-1 basis-0 min-w-0 h-8 items-center">
+                    {CHART_TYPE_OPTIONS.map((opt) => (
+                      <button
+                        key={opt.value}
+                        onClick={() => setChartType(opt.value)}
+                        className={clsx(
+                          "shadow-none btn btn-xs md:btn-sm flex-1 min-w-0 border-none transition-colors duration-300 h-full min-h-0 flex items-center justify-center p-0 rounded-none first:rounded-l-lg last:rounded-r-lg",
+                          chartType === opt.value
+                            ? "border-solid border-accent/20 bg-accent/20 text-primary-content z-10 hover:bg-accent/30"
+                            : "border-solid bg-base-200 text-base-content/50 hover:text-base-content hover:bg-base-300"
+                        )}
+                        title={opt.label}
+                      >
+                        {opt.icon}
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
                 {/* Right side: Overlays */}
@@ -146,16 +185,16 @@ function App() {
                     <Layers className="w-4 h-4 text-base-content/70" />
                     <span className="text-[10px] font-bold text-base-content/70 uppercase tracking-wider hidden sm:block">Overlays</span>
                   </div>
-                  <div className="flex flex-1 w-full p-1 rounded-lg gap-1">
+                  <div className="flex flex-1 w-full p-1 rounded-lg gap-1 ">
                     {INDICATOR_OPTIONS.map((opt) => (
                       <button
                         key={opt.value}
                         onClick={() => toggleIndicator(opt.value)}
                         className={clsx(
-                          "btn btn-xs font-bold h-6 flex-1 min-w-0 rounded-md transition-all duration-300 relative overflow-hidden",
+                          "btn btn-xs font-bold h-7 flex-1 min-w-0 rounded-md transition-all duration-300 relative overflow-hidden",
                           activeIndicators.includes(opt.value)
-                            ? "bg-primary text-primary-content shadow-sm shadow-primary/30 scale-[1.02] z-10"
-                            : "bg-transparent text-base-content/50 hover:bg-base-content/10 hover:text-base-content hover:scale-[1.02]"
+                            ? "border-solid border-accent/20 bg-accent/20 text-primary-content hover:bg-accent/30 z-10"
+                            : "border-solid border-neutral/50 bg-transparent text-base-content/50 hover:text-base-content hover:bg-base-300"
                         )}
                       >
                         {opt.label}

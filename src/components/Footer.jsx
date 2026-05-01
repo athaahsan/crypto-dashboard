@@ -11,7 +11,7 @@ export default function Footer() {
         {/* Left Side: Logo & Copyright */}
         <aside className="flex flex-col md:flex-row items-center gap-2 md:gap-3">
           <h2 className="text-lg font-black tracking-tighter flex items-baseline select-none">
-            <span className="bg-gradient-to-br from-base-content to-base-content/60 bg-clip-text text-transparent">crypt</span>
+            <span className="bg-gradient-to-br from-base-content to-base-content/60 bg-clip-text text-transparent">Crypt</span>
             <span className="bg-gradient-to-br from-primary to-primary/80 bg-clip-text text-transparent">Dash</span>
           </h2>
           <span className="hidden md:block w-1 h-1 bg-base-content/20 rounded-full" />

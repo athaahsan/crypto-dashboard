@@ -41,7 +41,7 @@ export function useDashboardData(symbol, interval) {
         if (cancelled) return;
         try {
           const [klines, tickerData] = await Promise.all([
-            fetchKlines(symbol, interval, 300),
+            fetchKlines(symbol, interval, 1000),
             fetchTicker(symbol),
           ]);
           if (cancelled) return;
@@ -125,7 +125,7 @@ export function useDashboardData(symbol, interval) {
       try {
         const symbolBase = symbol.replace('USDT', '');
         const [klines, tickerData, fngData, athValue, newsData] = await Promise.all([
-          fetchKlines(symbol, interval, 300),
+          fetchKlines(symbol, interval, 1000),
           fetchTicker(symbol),
           fetchFearAndGreed(),
           fetchATH(symbol),
@@ -216,7 +216,7 @@ export function useDashboardData(symbol, interval) {
             } else {
               currentKlines.push(newKline);
               currentKlines.sort((a, b) => a.time - b.time);
-              if (currentKlines.length > 300) currentKlines.shift();
+              if (currentKlines.length > 1000) currentKlines.shift();
             }
 
             klinesRef.current = currentKlines;

@@ -6,44 +6,92 @@ export default function ChartWidget({ data, activeIndicators, chartType = 'candl
   const legendRef = useRef(null);
   const chartRef = useRef(null);
   const seriesRef = useRef({});
+  const lastDataRef = useRef({ length: 0, firstTime: null });
 
   const updateChartData = useCallback((chartData) => {
     if (!chartData || chartData.length === 0 || !seriesRef.current.mainSeries) return;
 
     const s = seriesRef.current;
-
-    if (chartType === 'line' || chartType === 'area') {
-      s.mainSeries.setData(chartData.map(d => ({ time: d.time, value: d.close })));
-    } else {
-      s.mainSeries.setData(chartData.map(d => ({ time: d.time, open: d.open, high: d.high, low: d.low, close: d.close })));
-    }
-
-    if (s.volumeSeries) {
-      s.volumeSeries.setData(chartData.map(d => ({ time: d.time, value: d.volume, color: d.close > d.open ? 'rgba(16, 185, 129, 0.4)' : 'rgba(239, 68, 68, 0.4)' })));
-    }
-
-    if (activeIndicators.includes('EMA')) {
-      s.overlaySeries[0].setData(chartData.map(d => ({ time: d.time, value: d.ema20 })).filter(d => d.value != null && !isNaN(d.value)));
-      s.overlaySeries[1].setData(chartData.map(d => ({ time: d.time, value: d.ema50 })).filter(d => d.value != null && !isNaN(d.value)));
-      s.overlaySeries[2].setData(chartData.map(d => ({ time: d.time, value: d.ema100 })).filter(d => d.value != null && !isNaN(d.value)));
-    }
     
-    let maOffset = activeIndicators.includes('EMA') ? 3 : 0;
-    if (activeIndicators.includes('MA')) {
-      s.overlaySeries[maOffset].setData(chartData.map(d => ({ time: d.time, value: d.ma7 })).filter(d => d.value != null && !isNaN(d.value)));
-      s.overlaySeries[maOffset + 1].setData(chartData.map(d => ({ time: d.time, value: d.ma50 })).filter(d => d.value != null && !isNaN(d.value)));
-      s.overlaySeries[maOffset + 2].setData(chartData.map(d => ({ time: d.time, value: d.ma100 })).filter(d => d.value != null && !isNaN(d.value)));
+    // Check if this is an incremental update (same starting time, same or +1 length)
+    const isIncremental = lastDataRef.current.length > 0 && 
+                          lastDataRef.current.firstTime === chartData[0].time &&
+                          chartData.length >= lastDataRef.current.length;
+
+    if (isIncremental) {
+      // Just update the last item(s)
+      const newItems = chartData.slice(lastDataRef.current.length - 1); // get the last item (or new items if length increased)
+      newItems.forEach(d => {
+        if (chartType === 'line' || chartType === 'area') {
+          s.mainSeries.update({ time: d.time, value: d.close });
+        } else {
+          s.mainSeries.update({ time: d.time, open: d.open, high: d.high, low: d.low, close: d.close });
+        }
+
+        if (s.volumeSeries) {
+          s.volumeSeries.update({ time: d.time, value: d.volume, color: d.close > d.open ? 'rgba(16, 185, 129, 0.4)' : 'rgba(239, 68, 68, 0.4)' });
+        }
+
+        if (activeIndicators.includes('EMA')) {
+          if (d.ema20 != null && !isNaN(d.ema20)) s.overlaySeries[0].update({ time: d.time, value: d.ema20 });
+          if (d.ema50 != null && !isNaN(d.ema50)) s.overlaySeries[1].update({ time: d.time, value: d.ema50 });
+          if (d.ema100 != null && !isNaN(d.ema100)) s.overlaySeries[2].update({ time: d.time, value: d.ema100 });
+        }
+        
+        let maOffset = activeIndicators.includes('EMA') ? 3 : 0;
+        if (activeIndicators.includes('MA')) {
+          if (d.ma7 != null && !isNaN(d.ma7)) s.overlaySeries[maOffset].update({ time: d.time, value: d.ma7 });
+          if (d.ma50 != null && !isNaN(d.ma50)) s.overlaySeries[maOffset + 1].update({ time: d.time, value: d.ma50 });
+          if (d.ma100 != null && !isNaN(d.ma100)) s.overlaySeries[maOffset + 2].update({ time: d.time, value: d.ma100 });
+        }
+
+        if (s.rsiSeries && d.rsi14 != null && !isNaN(d.rsi14)) {
+          s.rsiSeries.update({ time: d.time, value: d.rsi14 });
+        }
+
+        if (s.macdLine && s.macdSignal && s.macdHist) {
+          if (d.macdLine != null && !isNaN(d.macdLine)) s.macdLine.update({ time: d.time, value: d.macdLine });
+          if (d.macdSignal != null && !isNaN(d.macdSignal)) s.macdSignal.update({ time: d.time, value: d.macdSignal });
+          if (d.macdHist != null && !isNaN(d.macdHist)) s.macdHist.update({ time: d.time, value: d.macdHist, color: d.macdHist > 0 ? 'rgba(16, 185, 129, 0.5)' : 'rgba(239, 68, 68, 0.5)' });
+        }
+      });
+    } else {
+      // Full reset (setData)
+      if (chartType === 'line' || chartType === 'area') {
+        s.mainSeries.setData(chartData.map(d => ({ time: d.time, value: d.close })));
+      } else {
+        s.mainSeries.setData(chartData.map(d => ({ time: d.time, open: d.open, high: d.high, low: d.low, close: d.close })));
+      }
+
+      if (s.volumeSeries) {
+        s.volumeSeries.setData(chartData.map(d => ({ time: d.time, value: d.volume, color: d.close > d.open ? 'rgba(16, 185, 129, 0.4)' : 'rgba(239, 68, 68, 0.4)' })));
+      }
+
+      if (activeIndicators.includes('EMA')) {
+        s.overlaySeries[0].setData(chartData.map(d => ({ time: d.time, value: d.ema20 })).filter(d => d.value != null && !isNaN(d.value)));
+        s.overlaySeries[1].setData(chartData.map(d => ({ time: d.time, value: d.ema50 })).filter(d => d.value != null && !isNaN(d.value)));
+        s.overlaySeries[2].setData(chartData.map(d => ({ time: d.time, value: d.ema100 })).filter(d => d.value != null && !isNaN(d.value)));
+      }
+      
+      let maOffset = activeIndicators.includes('EMA') ? 3 : 0;
+      if (activeIndicators.includes('MA')) {
+        s.overlaySeries[maOffset].setData(chartData.map(d => ({ time: d.time, value: d.ma7 })).filter(d => d.value != null && !isNaN(d.value)));
+        s.overlaySeries[maOffset + 1].setData(chartData.map(d => ({ time: d.time, value: d.ma50 })).filter(d => d.value != null && !isNaN(d.value)));
+        s.overlaySeries[maOffset + 2].setData(chartData.map(d => ({ time: d.time, value: d.ma100 })).filter(d => d.value != null && !isNaN(d.value)));
+      }
+
+      if (s.rsiSeries) {
+        s.rsiSeries.setData(chartData.map(d => ({ time: d.time, value: d.rsi14 })).filter(d => d.value != null && !isNaN(d.value)));
+      }
+
+      if (s.macdLine && s.macdSignal && s.macdHist) {
+        s.macdLine.setData(chartData.map(d => ({ time: d.time, value: d.macdLine })).filter(d => d.value != null && !isNaN(d.value)));
+        s.macdSignal.setData(chartData.map(d => ({ time: d.time, value: d.macdSignal })).filter(d => d.value != null && !isNaN(d.value)));
+        s.macdHist.setData(chartData.map(d => ({ time: d.time, value: d.macdHist, color: d.macdHist > 0 ? 'rgba(16, 185, 129, 0.5)' : 'rgba(239, 68, 68, 0.5)' })).filter(d => d.value != null && !isNaN(d.value)));
+      }
     }
 
-    if (s.rsiSeries) {
-      s.rsiSeries.setData(chartData.map(d => ({ time: d.time, value: d.rsi14 })).filter(d => d.value != null && !isNaN(d.value)));
-    }
-
-    if (s.macdLine && s.macdSignal && s.macdHist) {
-      s.macdLine.setData(chartData.map(d => ({ time: d.time, value: d.macdLine })).filter(d => d.value != null && !isNaN(d.value)));
-      s.macdSignal.setData(chartData.map(d => ({ time: d.time, value: d.macdSignal })).filter(d => d.value != null && !isNaN(d.value)));
-      s.macdHist.setData(chartData.map(d => ({ time: d.time, value: d.macdHist, color: d.macdHist > 0 ? 'rgba(16, 185, 129, 0.5)' : 'rgba(239, 68, 68, 0.5)' })).filter(d => d.value != null && !isNaN(d.value)));
-    }
+    lastDataRef.current = { length: chartData.length, firstTime: chartData[0].time };
   }, [activeIndicators, chartType]);
 
   // 1. Chart Initialization - only recreate when activeIndicators or chartType change
@@ -210,15 +258,13 @@ export default function ChartWidget({ data, activeIndicators, chartType = 'candl
       }
     });
 
-    // Apply data immediately if already available
-    updateChartData(data);
-
     return () => {
       chart.remove();
       chartRef.current = null;
       seriesRef.current = {};
+      lastDataRef.current = { length: 0, firstTime: null };
     };
-  }, [activeIndicators, chartType, updateChartData, data]);
+  }, [activeIndicators, chartType, updateChartData]);
 
   // 2. Data Population - only update series via setData when data changes
   useEffect(() => {

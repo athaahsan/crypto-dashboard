@@ -147,15 +147,15 @@ export default function AiInsightPanel({ payload, symbol }) {
                 
                 {insightSymbol && (
                   <div className={clsx(
-                    "badge py-3 px-3 gap-1.5 font-bold shadow-sm border",
+                    "badge py-3 px-3 gap-1.5 text-xs font-bold shadow-sm border",
                     (insightSymbol === symbol && insightInterval === payload?.timeframe)
                       ? "bg-primary/10 text-primary border-primary/20" 
                       : "bg-warning/10 text-warning border-warning/20"
                   )}>
                     {(insightSymbol === symbol && insightInterval === payload?.timeframe) ? (
-                      <><Sparkles className="w-3.5 h-3.5" /> Analysis for {insightSymbol} ({insightInterval})</>
+                      <><Sparkles className="w-3.5 h-3.5" /> Analysis for {insightSymbol} ({insightInterval.toUpperCase()})</>
                     ) : (
-                      <><Info className="w-3.5 h-3.5" /> Showing previous analysis for {insightSymbol} ({insightInterval})</>
+                      <><Info className="w-3.5 h-3.5" /> Showing previous analysis for {insightSymbol} ({insightInterval.toUpperCase()})</>
                     )}
                   </div>
                 )}
