@@ -147,9 +147,9 @@ function App() {
                         key={opt.value}
                         onClick={() => setInterval(opt.value)}
                         className={clsx(
-                          "shadow-none btn btn-xs md:btn-sm flex-1 min-w-0 border-none font-bold transition-colors duration-300 h-full min-h-0 rounded-none first:rounded-l-lg last:rounded-r-lg",
+                          "btn btn-xs flex-1 min-w-0 border-none font-bold transition-colors duration-300 h-full min-h-0 rounded-none first:rounded-l-lg last:rounded-r-lg",
                           interval === opt.value
-                            ? "border-solid border-accent/20 bg-accent/20 text-primary-content z-10 hover:bg-accent/30"
+                            ? "border-solid bg-accent/20 text-primary-content z-10 hover:bg-accent/30"
                             : "border-solid bg-base-200 text-base-content/50 hover:text-base-content hover:bg-base-300"
                         )}
                         title={opt.label}
@@ -166,9 +166,9 @@ function App() {
                         key={opt.value}
                         onClick={() => setChartType(opt.value)}
                         className={clsx(
-                          "shadow-none btn btn-xs md:btn-sm flex-1 min-w-0 border-none transition-colors duration-300 h-full min-h-0 flex items-center justify-center p-0 rounded-none first:rounded-l-lg last:rounded-r-lg",
+                          "btn btn-xs flex-1 min-w-0 border-none transition-colors duration-300 h-full min-h-0 flex items-center justify-center p-0 rounded-none first:rounded-l-lg last:rounded-r-lg",
                           chartType === opt.value
-                            ? "border-solid border-accent/20 bg-accent/20 text-primary-content z-10 hover:bg-accent/30"
+                            ? "border-solid bg-accent/20 text-primary-content z-10 hover:bg-accent/30"
                             : "border-solid bg-base-200 text-base-content/50 hover:text-base-content hover:bg-base-300"
                         )}
                         title={opt.label}
@@ -179,28 +179,23 @@ function App() {
                   </div>
                 </div>
 
-                {/* Right side: Overlays */}
-                <div className="flex items-center gap-1 bg-base-200 p-1 rounded-lg w-full lg:w-1/2">
-                  <div className="px-2 flex items-center gap-1.5 shrink-0 ">
-                    <Layers className="w-4 h-4 text-base-content/70" />
-                    <span className="text-[10px] font-bold text-base-content/70 uppercase tracking-wider hidden sm:block">Overlays</span>
-                  </div>
-                  <div className="flex flex-1 w-full p-1 rounded-lg gap-1 ">
-                    {INDICATOR_OPTIONS.map((opt) => (
-                      <button
-                        key={opt.value}
-                        onClick={() => toggleIndicator(opt.value)}
-                        className={clsx(
-                          "btn btn-xs font-bold h-7 flex-1 min-w-0 rounded-md transition-all duration-300 relative overflow-hidden",
-                          activeIndicators.includes(opt.value)
-                            ? "border-solid border-accent/20 bg-accent/20 text-primary-content hover:bg-accent/30 z-10"
-                            : "border-solid border-neutral/50 bg-transparent text-base-content/50 hover:text-base-content hover:bg-base-300"
-                        )}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                {/* Right side: Indicators */}
+                <div className="flex w-full lg:w-1/2 h-8 h-8 items-center p-0">
+                  {INDICATOR_OPTIONS.map((opt) => (
+                    <button
+                      key={opt.value}
+                      onClick={() => toggleIndicator(opt.value)}
+                      className={clsx(
+                        "btn btn-xs flex-1 min-w-0 border-none font-bold transition-colors duration-300 h-full min-h-0 rounded-none first:rounded-l-lg last:rounded-r-lg",
+                        activeIndicators.includes(opt.value)
+                          ? "border-solid bg-accent/20 text-primary-content z-10 hover:bg-accent/30"
+                          : "border-solid bg-base-200 text-base-content/50 hover:text-base-content hover:bg-base-300"
+                      )}
+                      title={opt.label}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
                 </div>
               </div>
 
@@ -210,7 +205,7 @@ function App() {
                   <p className="text-sm font-medium text-base-content/60">Syncing market data...</p>
                 </div>
               ) : (
-                <div className="flex-1 w-full rounded-xl overflow-hidden bg-base-100">
+                <div className="flex-1 w-full rounded-xl overflow-hidden bg-base-100 border border-base-300">
                   <ChartWidget data={data} activeIndicators={activeIndicators} chartType={chartType} />
                 </div>
               )}
