@@ -39,17 +39,17 @@ export default function CoinSelector({ options, value, onChange }) {
       </button>
 
       {isOpen && (
-        <div className="absolute z-50 top-full left-0 mt-2 w-64 bg-base-200 border border-base-300 rounded-xl shadow-xl overflow-hidden flex flex-col max-h-[300px] animate-fade-in-up origin-top">
-          <div className="p-2 border-b border-base-300 sticky top-0 bg-base-200 shrink-0 z-10">
+        <div className="absolute z-50 top-full left-0 mt-3 w-64 bg-base-200/80 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[350px] animate-fade-in-up origin-top">
+          <div className="p-2 border-b border-white/10 sticky top-0 bg-transparent shrink-0 z-10">
             <div className="relative">
-              <Search className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-base-content/50" />
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-base-content/50" />
               <input
                 type="text"
                 autoFocus
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search coins..."
-                className="w-full bg-base-300 rounded-lg pl-8 pr-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                className="w-full bg-white/5 border border-white/5 rounded-xl pl-9 pr-3 py-2.5 text-sm focus:outline-none focus:bg-white/10 focus:border-white/20 focus:ring-1 focus:ring-accent/50 transition-all placeholder-base-content/40"
               />
             </div>
           </div>
@@ -63,10 +63,10 @@ export default function CoinSelector({ options, value, onChange }) {
                     setIsOpen(false);
                   }}
                   className={clsx(
-                    "w-full text-left px-3 py-2 rounded-lg text-sm font-bold transition-colors flex items-center gap-2.5",
+                    "w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center gap-3",
                     value === opt
-                      ? "bg-primary text-primary-content"
-                      : "hover:bg-base-300 text-base-content"
+                      ? "bg-accent/20 text-primary-content"
+                      : "hover:bg-white/10 text-base-content/80 hover:text-base-content"
                   )}
                 >
                   <img 
