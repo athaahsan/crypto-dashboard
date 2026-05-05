@@ -75,11 +75,21 @@ export async function fetchATH(symbol) {
 
 export async function fetchNews() {
   try {
-    const url = `https://api.coingecko.com/api/v3/news?page=1`;
+    // CoinGecko now requires an API key, returning 401 Unauthorized for public requests.
+    // Instead, we fetch top crypto news from Cointelegraph's RSS feed via the free rss2json API.
+    const url = `https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fcointelegraph.com%2Frss`;
     const res = await fetch(url);
     const data = await res.json();
-    if (data && Array.isArray(data.data)) {
-      return data.data.slice(0, 10);
+    
+    if (data && data.status === 'ok' && Array.isArray(data.items)) {
+      // Map RSS format to match the existing NewsWidget expectations
+      return data.items.slice(0, 10).map(item => ({
+        title: item.title,
+        url: item.link,
+        thumb: item.thumbnail || item.enclosure?.link,
+        author: item.author || 'Cointelegraph',
+        created_at: new Date(item.pubDate).getTime() / 1000
+      }));
     }
     return [];
   } catch (error) {

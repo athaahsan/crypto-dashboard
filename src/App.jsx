@@ -7,17 +7,11 @@ import FngWidget from './components/FngWidget';
 import NewsWidget from './components/NewsWidget';
 import Footer from './components/Footer';
 import CoinSelector from './components/CoinSelector';
+import TopPerformingCoin from './components/TopPerformingCoin';
 import { Settings, BarChart2, Activity, Zap, Send, Layers, CandlestickChart, LineChart, AreaChart, ChartColumn } from 'lucide-react';
+import { CRYPTO_OPTIONS } from './utils/constants';
 import clsx from 'clsx';
 
-const CRYPTO_OPTIONS = [
-  "BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "XRPUSDT", "ADAUSDT",
-  "DOGEUSDT", "AVAXUSDT", "DOTUSDT", "LINKUSDT", "MATICUSDT", "SHIBUSDT",
-  "LTCUSDT", "BCHUSDT", "UNIUSDT", "ATOMUSDT", "ETCUSDT", "FILUSDT",
-  "NEARUSDT", "APTUSDT", "OPUSDT", "ARBUSDT", "INJUSDT", "RNDRUSDT",
-  "STXUSDT", "FTMUSDT", "SANDUSDT", "MANAUSDT", "GALAUSDT", "SUIUSDT",
-  "SEIUSDT", "TIAUSDT", "PEPEUSDT", "WIFUSDT", "BONKUSDT"
-];
 const INTERVAL_OPTIONS = [
   { label: '1D', value: '1d' },
   { label: '4H', value: '4h' },
@@ -120,6 +114,8 @@ function App() {
       </div>
 
       <main className="max-w-[1600px] mx-auto p-4 md:p-6 space-y-6">
+
+        <TopPerformingCoin currentSymbol={symbol} onSelectCoin={setSymbol} />
 
         {/* Main Content Area */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 animate-fade-in-up animation-delay-100 opacity-0">

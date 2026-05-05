@@ -24,26 +24,13 @@ const StripItem = ({ title, value, trend, trendValue, isLast, subValue }) => (
 export default function KpiRibbon({ ticker, ath, data, formatPrice }) {
   const currentPrice = formatPrice(ticker?.lastPrice);
 
-  const todayOpen = data ? (() => {
-    const now = new Date();
-    const startOfTodayUTC = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()) / 1000;
-    const todayCandles = data.filter(c => c.time >= startOfTodayUTC);
-    if (todayCandles.length > 0) return todayCandles[0].open;
-    return null;
-  })() : null;
-
   let currentTrend = undefined;
   let currentTrendValue = '-';
 
-  if (ticker && todayOpen) {
-    const currentPriceNum = parseFloat(ticker.lastPrice);
-    const percentChange = ((currentPriceNum - todayOpen) / todayOpen) * 100;
-    currentTrend = percentChange >= 0 ? 'up' : 'down';
-    currentTrendValue = `${percentChange > 0 ? '+' : ''}${percentChange.toFixed(2)}% (Today)`;
-  } else if (ticker) {
+  if (ticker) {
     const percentChange = parseFloat(ticker.priceChangePercent);
     currentTrend = percentChange >= 0 ? 'up' : 'down';
-    currentTrendValue = `${percentChange > 0 ? '+' : ''}${percentChange.toFixed(2)}% (24h)`;
+    currentTrendValue = `${percentChange > 0 ? '+' : ''}${percentChange.toFixed(2)}% (24H)`;
   }
 
   const athPriceNum = ath?.price || ath; // fallback if ath is just a number
