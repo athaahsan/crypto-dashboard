@@ -3,7 +3,7 @@ import { TrendingUp } from 'lucide-react';
 import { CRYPTO_OPTIONS } from '../utils/constants';
 import clsx from 'clsx';
 
-export default function TopPerformingCoin({ currentSymbol, onSelectCoin }) {
+export default function TopPerformingCoin({ currentSymbol, onSelectCoin, ticker: externalTicker }) {
   const [topCoins, setTopCoins] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -176,9 +176,17 @@ export default function TopPerformingCoin({ currentSymbol, onSelectCoin }) {
       
       <div className="flex overflow-x-auto gap-2 w-full pb-1 md:pb-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         {topCoins.map((coin, index) => {
-          const changePercent = parseFloat(coin.priceChangePercent);
-          const isPositive = changePercent >= 0;
           const isActive = currentSymbol === coin.symbol;
+          // For the active coin, prefer the authoritative ticker from useDashboardData
+          // so the 24H% matches KpiRibbon exactly.
+          const changePercent = (isActive && externalTicker)
+            ? parseFloat(externalTicker.priceChangePercent)
+            : parseFloat(coin.priceChangePercent);
+          const displayPrice = (isActive && externalTicker)
+            ? parseFloat(externalTicker.lastPrice)
+            : parseFloat(coin.lastPrice);
+          const isPositive = changePercent >= 0;
+
 
           return (
             <button 
@@ -210,7 +218,7 @@ export default function TopPerformingCoin({ currentSymbol, onSelectCoin }) {
               </span>
               
               <span className="font-mono text-xs text-base-content/60">
-                ${parseFloat(coin.lastPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
+                ${displayPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
               </span>
             </button>
           );

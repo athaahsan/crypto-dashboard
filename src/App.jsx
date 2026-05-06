@@ -115,7 +115,7 @@ function App() {
 
       <main className="max-w-[1600px] mx-auto p-4 md:p-6 space-y-6">
 
-        <TopPerformingCoin currentSymbol={symbol} onSelectCoin={setSymbol} />
+        <TopPerformingCoin currentSymbol={symbol} onSelectCoin={setSymbol} ticker={ticker} />
 
         {/* Main Content Area */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 animate-fade-in-up animation-delay-100 opacity-0">
