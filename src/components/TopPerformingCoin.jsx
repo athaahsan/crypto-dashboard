@@ -174,7 +174,7 @@ export default function TopPerformingCoin({ currentSymbol, onSelectCoin, ticker:
         <h2 className="text-xs font-bold uppercase tracking-widest text-base-content/80 whitespace-nowrap">Top Movers (24H)</h2>
       </div>
       
-      <div className="flex overflow-x-auto gap-2 w-full pb-1 md:pb-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+      <div className="flex overflow-x-auto gap-2 w-full px-2 pb-1 md:pb-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] [mask-image:linear-gradient(to_right,transparent,black_8px,black_calc(100%-8px),transparent)]">
         {topCoins.map((coin, index) => {
           const isActive = currentSymbol === coin.symbol;
           // For the active coin, prefer the authoritative ticker from useDashboardData
