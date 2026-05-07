@@ -171,7 +171,7 @@ export default function TopPerformingCoin({ currentSymbol, onSelectCoin, ticker:
         <div className="bg-success/20 p-1 rounded-full flex items-center justify-center shadow-inner shadow-success/10">
           <TrendingUp className="w-4 h-4 text-success" />
         </div>
-        <h2 className="text-xs font-bold uppercase tracking-widest text-base-content/80 whitespace-nowrap">Top 5 (24H)</h2>
+        <h2 className="text-xs font-bold uppercase tracking-widest text-base-content/80 whitespace-nowrap">Top Movers (24H)</h2>
       </div>
       
       <div className="flex overflow-x-auto gap-2 w-full pb-1 md:pb-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
@@ -193,8 +193,7 @@ export default function TopPerformingCoin({ currentSymbol, onSelectCoin, ticker:
               key={coin.symbol} 
               onClick={() => onSelectCoin && onSelectCoin(coin.symbol)}
               className={clsx(
-                "bg-base-100 rounded-lg px-3 py-1.5 border flex items-center gap-3 shrink-0 shadow-sm transition-all hover:border-primary/50 cursor-pointer hover:shadow-md",
-                isActive ? "border-primary ring-1 ring-primary/30 bg-base-200/50" : "border-base-300"
+                "bg-base-100 rounded-lg px-3 py-1.5 border flex items-center gap-3 shrink-0 shadow-sm transition-all hover:border-accent/50 cursor-pointer hover:shadow-md border-base-300"
               )}
             >
               <div className="text-[10px] font-bold text-base-content/50 bg-base-200 px-1.5 py-0.5 rounded">
