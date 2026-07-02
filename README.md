@@ -1,29 +1,29 @@
-# cryptDash - Crypto Dashboard
+# CryptDash
 
-A modern, responsive, and feature-rich cryptocurrency dashboard built with React and Tailwind CSS.
+CryptDash is a responsive cryptocurrency market dashboard that brings live price action, technical indicators, market sentiment, crypto news, and AI-generated trading context into one focused interface.
 
-**🚀 The project is live here:** [https://crypto.athaahsan.com/](https://crypto.athaahsan.com/)
+**Live site:** [https://crypto.athaahsan.com/](https://crypto.athaahsan.com/)
 
-## Features
+## Highlights
 
-- **Live Market Data:** Real-time price updates and candlestick/line charts powered by TradingView's Lightweight Charts and Binance APIs.
-- **AI-Powered Technical Analysis:** On-demand technical insights driven by Gemini 3 Flash via OpenRouter. The AI analyzes current market structure, momentum, and indicators to provide a directional probability and reasoning.
-- **Crypto News Feed:** A scrolling feed of the latest cryptocurrency news aggregated from Cointelegraph's RSS feed.
-- **Fear & Greed Index:** Real-time tracking of market sentiment (Fear & Greed Index) sourced from Alternative.me, visualized with historical trending dots synced to the chart timeline.
-- **Responsive "Cyber-Glass" UI:** Built with DaisyUI and Tailwind CSS, featuring a sleek, fully responsive grid layout that adapts perfectly from mobile screens to ultrawide desktop monitors.
-- **Dynamic KPI Ribbon:** A stylish terminal-style ribbon displaying real-time Price, All-Time Highs (with dates), and Period High/Low metrics.
+- **Live crypto market tracking:** Monitors selected USDT pairs with Binance kline and ticker data.
+- **Realtime-first data flow:** Streams Binance WebSocket updates with a polling fallback for less reliable environments.
+- **Interactive chart experience:** Switch between candlestick, line, and area views with chart overlays and indicators.
+- **Technical analysis toolkit:** Includes volume, EMA, MA, MACD, RSI, ADX, and directional index calculations.
+- **AI-powered market insight:** Converts the latest technical payload into structured buy, hold, and sell confidence through an OpenRouter-backed Netlify function.
+- **Sentiment at a glance:** Displays the Fear & Greed Index history from Alternative.me alongside market context.
+- **Crypto news feed:** Surfaces recent Cointelegraph RSS items directly in the dashboard.
+- **Responsive dark interface:** Built as a polished, mobile-friendly trading dashboard with Tailwind CSS, DaisyUI, and Lucide icons.
 
 ## Tech Stack
 
-- **Frontend:** React, Vite
-- **Styling:** Tailwind CSS, DaisyUI
+- **Frontend:** React 19, Vite
+- **Styling:** Tailwind CSS 4, DaisyUI
+- **Charts:** TradingView Lightweight Charts
 - **Icons:** Lucide React
-- **Charting:** `lightweight-charts`
-- **APIs:** Binance (Market Data), Alternative.me (Sentiment), Cointelegraph RSS (News), OpenRouter (AI Insights)
+- **Serverless:** Netlify Functions
+- **Data sources:** Binance, Alternative.me, Cointelegraph RSS, OpenRouter
 
-## Getting Started
+## Disclaimer
 
-1. Clone the repository
-2. Install dependencies using `npm install`
-3. Add your OpenRouter API key to your environment variables or Netlify functions
-4. Start the development server with `npm run dev` (or `netlify dev` to test serverless functions locally)
+CryptDash is built for market research and educational use. AI-generated insights and technical indicators are not financial advice.
