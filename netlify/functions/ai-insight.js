@@ -7,6 +7,12 @@ STRICT RULES:
 - Be consistent and deterministic in reasoning.
 `;
 
+const MODELS = [
+  "google/gemini-3.7-flash",
+  "google/gemini-3.6-flash",
+  "google/gemini-3.5-flash"
+];
+
 function build_user_prompt(payload) {
   const tf = payload.timeframe || '1d (daily)';
   
@@ -49,7 +55,7 @@ ${JSON.stringify(payload, null, 2)}
 `;
 }
 
-export const handler = async function (event, context) {
+export const handler = async function (event) {
   // Only allow POST
   if (event.httpMethod !== "POST") {
     return { statusCode: 405, body: "Method Not Allowed" };
@@ -58,72 +64,109 @@ export const handler = async function (event, context) {
   try {
     const payload = JSON.parse(event.body);
 
-    const openRouterApiKey = process.env.OPENROUTER_API_KEY;
+    const openRouterApiKey = globalThis.process.env.OPENROUTER_API_KEY;
 
     if (!openRouterApiKey) {
       return { statusCode: 500, body: JSON.stringify({ error: "Missing API Key" }) };
     }
 
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${openRouterApiKey}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
-        messages: [
-          { role: "system", content: SYSTEM_PROMPT },
-          { role: "user", content: build_user_prompt(payload) }
-        ],
-        response_format: {
-          type: "json_schema",
-          json_schema: {
-            name: "crypto_analysis",
-            strict: true,
-            schema: {
-              type: "object",
-              properties: {
-                buy_confidence: {
-                  type: "number",
-                  minimum: 0,
-                  maximum: 1,
-                  description: "Probability score favoring a buy decision."
-                },
-                hold_confidence: {
-                  type: "number",
-                  minimum: 0,
-                  maximum: 1,
-                  description: "Probability score favoring a hold decision."
-                },
-                sell_confidence: {
-                  type: "number",
-                  minimum: 0,
-                  maximum: 1,
-                  description: "Probability score favoring a sell decision."
-                },
-                reasoning: {
-                  type: "string",
-                  description: "Brief technical explanation supporting the dominant decision. Keep it concise and signal-focused."
-                }
+    const requestBody = {
+      messages: [
+        { role: "system", content: SYSTEM_PROMPT },
+        { role: "user", content: build_user_prompt(payload) }
+      ],
+      response_format: {
+        type: "json_schema",
+        json_schema: {
+          name: "crypto_analysis",
+          strict: true,
+          schema: {
+            type: "object",
+            properties: {
+              buy_confidence: {
+                type: "number",
+                minimum: 0,
+                maximum: 1,
+                description: "Probability score favoring a buy decision."
               },
-              required: ["buy_confidence", "hold_confidence", "sell_confidence", "reasoning"],
-              additionalProperties: false
-            }
+              hold_confidence: {
+                type: "number",
+                minimum: 0,
+                maximum: 1,
+                description: "Probability score favoring a hold decision."
+              },
+              sell_confidence: {
+                type: "number",
+                minimum: 0,
+                maximum: 1,
+                description: "Probability score favoring a sell decision."
+              },
+              reasoning: {
+                type: "string",
+                description: "Brief technical explanation supporting the dominant decision. Keep it concise and signal-focused."
+              }
+            },
+            required: ["buy_confidence", "hold_confidence", "sell_confidence", "reasoning"],
+            additionalProperties: false
           }
         }
-      })
-    });
+      }
+    };
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      return { statusCode: response.status, body: JSON.stringify({ error: "Failed to fetch from OpenRouter", details: errorText }) };
+    const errors = [];
+
+    for (const model of MODELS) {
+      try {
+        const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${openRouterApiKey}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            model,
+            ...requestBody
+          })
+        });
+
+        if (!response.ok) {
+          const details = await response.text();
+          throw new Error(`OpenRouter returned ${response.status}: ${details}`);
+        }
+
+        const data = await response.json();
+
+        if (data.error || !Array.isArray(data.choices) || data.choices.length === 0) {
+          throw new Error(data.error?.message || "OpenRouter returned no completion choices");
+        }
+
+        const content = data.choices[0]?.message?.content;
+
+        if (typeof content !== "string") {
+          throw new Error("OpenRouter returned no completion content");
+        }
+
+        JSON.parse(content);
+
+        return {
+          statusCode: 200,
+          body: JSON.stringify({
+            ...data,
+            model_used: model
+          })
+        };
+      } catch (error) {
+        errors.push({ model, error: error.message });
+        console.error(`AI insight request failed for ${model}:`, error);
+      }
     }
 
-    const data = await response.json();
     return {
-      statusCode: 200,
-      body: JSON.stringify(data)
+      statusCode: 502,
+      body: JSON.stringify({
+        error: "All AI insight models failed",
+        details: errors
+      })
     };
   } catch (error) {
     return { statusCode: 500, body: JSON.stringify({ error: error.message }) };

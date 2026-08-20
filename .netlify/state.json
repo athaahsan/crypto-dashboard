@@ -1,20 +1,21 @@
 {
 	"geolocation": {
 		"data": {
-			"city": "Malang",
+			"city": "Semarang",
 			"country": {
 				"code": "ID",
 				"name": "Indonesia"
 			},
 			"subdivision": {
-				"code": "JI",
-				"name": "East Java"
+				"code": "JT",
+				"name": "Central Java"
 			},
 			"timezone": "Asia/Jakarta",
-			"latitude": -7.9826,
-			"longitude": 112.6308,
-			"postalCode": "65152"
+			"latitude": -7.3036,
+			"longitude": 110.5428,
+			"postalCode": "50261"
 		},
-		"timestamp": 1778120812236
-	}
+		"timestamp": 1787206190769
+	},
+	"dbConnectionString": "postgres://localhost:54597/postgres"
 }

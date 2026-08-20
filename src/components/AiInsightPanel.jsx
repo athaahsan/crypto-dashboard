@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Sparkles, BrainCircuit, Activity, AlertTriangle, Code, Info } from 'lucide-react';
 import clsx from 'clsx';
 
 const syntaxHighlight = (json) => {
   if (!json) return '';
   json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+  return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+-]?\d+)?)/g, function (match) {
     let cls = 'text-warning'; // number
     if (/^"/.test(match)) {
       if (/:$/.test(match)) {
@@ -26,6 +26,7 @@ export default function AiInsightPanel({ payload, symbol }) {
   const [insight, setInsight] = useState(null);
   const [insightSymbol, setInsightSymbol] = useState(null);
   const [insightInterval, setInsightInterval] = useState(null);
+  const [insightModel, setInsightModel] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('insight'); // 'insight' | 'payload'
@@ -52,6 +53,7 @@ export default function AiInsightPanel({ payload, symbol }) {
         setInsight(JSON.parse(content));
         setInsightSymbol(symbol);
         setInsightInterval(payload.timeframe);
+        setInsightModel(data.model_used || data.model || null);
         setActiveTab('insight');
       } else {
         throw new Error('Invalid response structure from AI');
@@ -88,7 +90,7 @@ export default function AiInsightPanel({ payload, symbol }) {
             <div className="alert bg-base-300 border border-base-300 shadow-sm shrink-0 rounded-xl">
               <Info className="w-5 h-5 text-info shrink-0" />
               <span className="text-xs">
-                Exact JSON sent to Gemini 3 Flash, with pre-calculated indicators to guarantee accuracy.
+                Exact JSON sent to the Gemini Flash model chain, with pre-calculated indicators to guarantee accuracy.
               </span>
             </div>
             <div className="flex-1 overflow-auto custom-scrollbar bg-base-300 rounded-xl border border-base-300 p-4 min-h-0 shadow-inner">
@@ -146,16 +148,24 @@ export default function AiInsightPanel({ payload, symbol }) {
               <div className="space-y-6 flex-1 overflow-y-auto pr-2 custom-scrollbar flex flex-col">
                 
                 {insightSymbol && (
-                  <div className={clsx(
-                    "badge py-3 px-3 gap-1.5 text-xs font-bold shadow-sm border",
-                    (insightSymbol === symbol && insightInterval === payload?.timeframe)
-                      ? "bg-primary/10 text-primary border-primary/20" 
-                      : "bg-warning/10 text-warning border-warning/20"
-                  )}>
-                    {(insightSymbol === symbol && insightInterval === payload?.timeframe) ? (
-                      <><Sparkles className="w-3.5 h-3.5" /> Analysis for {insightSymbol} ({insightInterval.toUpperCase()})</>
-                    ) : (
-                      <><Info className="w-3.5 h-3.5" /> Showing previous analysis for {insightSymbol} ({insightInterval.toUpperCase()})</>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <div className={clsx(
+                      "badge py-3 px-3 gap-1.5 text-xs font-bold shadow-sm border",
+                      (insightSymbol === symbol && insightInterval === payload?.timeframe)
+                        ? "bg-primary/10 text-primary border-primary/20"
+                        : "bg-warning/10 text-warning border-warning/20"
+                    )}>
+                      {(insightSymbol === symbol && insightInterval === payload?.timeframe) ? (
+                        <><Sparkles className="w-3.5 h-3.5" /> Analysis for {insightSymbol} ({insightInterval.toUpperCase()})</>
+                      ) : (
+                        <><Info className="w-3.5 h-3.5" /> Showing previous analysis for {insightSymbol} ({insightInterval.toUpperCase()})</>
+                      )}
+                    </div>
+                    {insightModel && (
+                      <div className="badge badge-ghost py-3 px-3 gap-1.5 text-xs border border-base-300">
+                        <BrainCircuit className="w-3.5 h-3.5" />
+                        {insightModel.replace('google/', '')}
+                      </div>
                     )}
                   </div>
                 )}
