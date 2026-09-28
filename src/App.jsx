@@ -38,6 +38,7 @@ const INDICATOR_OPTIONS = [
   { label: 'VOL', value: 'VOL' },
   { label: 'EMA', value: 'EMA' },
   { label: 'MA', value: 'MA' },
+  { label: 'BB', value: 'BB', title: 'Bollinger Bands (20, 2)' },
   { label: 'MACD', value: 'MACD' },
   { label: 'RSI', value: 'RSI' }
 ];
@@ -187,7 +188,7 @@ function App() {
                           ? "border-solid bg-accent/20 text-primary-content z-10 hover:bg-accent/30"
                           : "border-solid bg-base-200 text-base-content/50 hover:text-base-content hover:bg-base-300"
                       )}
-                      title={opt.label}
+                      title={opt.title || opt.label}
                     >
                       {opt.label}
                     </button>

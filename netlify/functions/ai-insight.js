@@ -8,6 +8,7 @@ STRICT RULES:
 `;
 
 const MODELS = [
+  "google/gemini-3.8-flash",
   "google/gemini-3.7-flash",
   "google/gemini-3.6-flash",
   "google/gemini-3.5-flash"
@@ -38,6 +39,11 @@ PAYLOAD FIELD DESCRIPTIONS:
 - price_vs_ema100_percent: Percentage distance between latest price and EMA(100); positive means price above trend.
 - rsi_14_last_7: RSI(14) values from the last 7 candles showing momentum progression.
 - macd_histogram_12_26_9_last_7: MACD histogram values showing recent momentum acceleration or deceleration.
+- bollinger_middle_20_2: Middle Bollinger Band using SMA(20) of closing prices.
+- bollinger_upper_20_2: Upper Bollinger Band at SMA(20) + 2 standard deviations.
+- bollinger_lower_20_2: Lower Bollinger Band at SMA(20) - 2 standard deviations.
+- bollinger_percent_b_20_2: Relative price position within the Bollinger Bands. 0 means at the lower band, 0.5 at the middle band, and 1 at the upper band. Values outside 0-1 mean price is outside the bands.
+- bollinger_bandwidth_percent_20_2: Band width as a percentage of the middle band, indicating recent volatility expansion or compression.
 - adx_14: ADX(14) value indicating current trend strength regardless of direction.
 - positive_di_14: Positive directional index measuring bullish directional pressure.
 - negative_di_14: Negative directional index measuring bearish directional pressure.

@@ -45,6 +45,12 @@ export default function ChartWidget({ data, activeIndicators, chartType = 'candl
           if (d.ma100 != null && !isNaN(d.ma100)) s.overlaySeries[maOffset + 2].update({ time: d.time, value: d.ma100 });
         }
 
+        if (s.bollingerSeries) {
+          if (d.bollingerUpper != null) s.bollingerSeries[0].update({ time: d.time, value: d.bollingerUpper });
+          if (d.bollingerMiddle != null) s.bollingerSeries[1].update({ time: d.time, value: d.bollingerMiddle });
+          if (d.bollingerLower != null) s.bollingerSeries[2].update({ time: d.time, value: d.bollingerLower });
+        }
+
         if (s.rsiSeries && d.rsi14 != null && !isNaN(d.rsi14)) {
           s.rsiSeries.update({ time: d.time, value: d.rsi14 });
         }
@@ -78,6 +84,12 @@ export default function ChartWidget({ data, activeIndicators, chartType = 'candl
         s.overlaySeries[maOffset].setData(chartData.map(d => ({ time: d.time, value: d.ma7 })).filter(d => d.value != null && !isNaN(d.value)));
         s.overlaySeries[maOffset + 1].setData(chartData.map(d => ({ time: d.time, value: d.ma50 })).filter(d => d.value != null && !isNaN(d.value)));
         s.overlaySeries[maOffset + 2].setData(chartData.map(d => ({ time: d.time, value: d.ma100 })).filter(d => d.value != null && !isNaN(d.value)));
+      }
+
+      if (s.bollingerSeries) {
+        s.bollingerSeries[0].setData(chartData.map(d => ({ time: d.time, value: d.bollingerUpper })).filter(d => d.value != null));
+        s.bollingerSeries[1].setData(chartData.map(d => ({ time: d.time, value: d.bollingerMiddle })).filter(d => d.value != null));
+        s.bollingerSeries[2].setData(chartData.map(d => ({ time: d.time, value: d.bollingerLower })).filter(d => d.value != null));
       }
 
       if (s.rsiSeries) {
@@ -177,6 +189,13 @@ export default function ChartWidget({ data, activeIndicators, chartType = 'candl
       s.overlaySeries.push(chart.addLineSeries({ color: '#FCD34D', lineWidth: 2, title: 'MA 7', priceScaleId: 'right'}));
       s.overlaySeries.push(chart.addLineSeries({ color: '#67E8F9', lineWidth: 2, title: 'MA 50', priceScaleId: 'right'}));
       s.overlaySeries.push(chart.addLineSeries({ color: '#C4B5FD', lineWidth: 2, title: 'MA 100', priceScaleId: 'right'}));
+    }
+    if (activeIndicators.includes('BB')) {
+      s.bollingerSeries = [
+        chart.addLineSeries({ color: '#60A5FA', lineWidth: 1, title: 'BB Upper (20, 2)', priceScaleId: 'right' }),
+        chart.addLineSeries({ color: '#9CA3AF', lineWidth: 1, title: 'BB Middle (20, 2)', priceScaleId: 'right' }),
+        chart.addLineSeries({ color: '#60A5FA', lineWidth: 1, title: 'BB Lower (20, 2)', priceScaleId: 'right' })
+      ];
     }
 
     // --- SUB PANES ---

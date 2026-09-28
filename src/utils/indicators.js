@@ -31,6 +31,30 @@ export function calculateMA(series, period) {
   return ma;
 }
 
+export function calculateBollingerBands(closes, period = 20, multiplier = 2) {
+  if (closes.length < period) return null;
+
+  const window = closes.slice(-period);
+  const middle = window.reduce((sum, value) => sum + value, 0) / period;
+  const variance = window.reduce(
+    (sum, value) => sum + Math.pow(value - middle, 2),
+    0
+  ) / period;
+  const standardDeviation = Math.sqrt(variance);
+  const upper = middle + multiplier * standardDeviation;
+  const lower = middle - multiplier * standardDeviation;
+  const currentPrice = closes[closes.length - 1];
+
+  const percentB = upper === lower
+    ? 0.5
+    : (currentPrice - lower) / (upper - lower);
+  const bandwidthPercent = middle === 0
+    ? 0
+    : ((upper - lower) / middle) * 100;
+
+  return { middle, upper, lower, percentB, bandwidthPercent };
+}
+
 // RSI using Wilder's Smoothing / EMA (adjust=False)
 export function calculateRSI(series, period = 14) {
   if (series.length < period + 1) return new Array(series.length).fill(null);

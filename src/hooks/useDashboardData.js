@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { fetchKlines, fetchTicker, fetchFearAndGreed, fetchATH, fetchNews } from '../services/api';
-import { calculateEMA, calculateMA, calculateRSI, calculateMACD, calculateADX, r4 } from '../utils/indicators';
+import { calculateEMA, calculateMA, calculateBollingerBands, calculateRSI, calculateMACD, calculateADX, r4 } from '../utils/indicators';
 
 // How often to poll when WebSocket is unavailable (ms)
 const POLL_INTERVAL_MS = 10_000;
+const roundBollinger = (value) => Math.round(value * 10000) / 10000;
 
 export function useDashboardData(symbol, interval) {
   const [data, setData] = useState(null);
@@ -75,6 +76,10 @@ export function useDashboardData(symbol, interval) {
       const rsi14 = calculateRSI(closes, 14);
       const { macdLine, signalLine, macdHistogram } = calculateMACD(closes);
       const { adx, plusDi, minusDi } = calculateADX(highs, lows, closes, 14);
+      const bollingerByCandle = closes.map((_, i) =>
+        calculateBollingerBands(closes.slice(Math.max(0, i - 19), i + 1), 20, 2)
+      );
+      const bollinger = bollingerByCandle[bollingerByCandle.length - 1];
 
       const lastClose = closes[closes.length - 1];
       const lastEma20 = ema20[ema20.length - 1];
@@ -94,6 +99,11 @@ export function useDashboardData(symbol, interval) {
         price_vs_ema100_percent: r4(((lastClose - lastEma100) / lastEma100) * 100),
         rsi_14_last_7: rsi14.slice(-7).map(r4),
         macd_histogram_12_26_9_last_7: macdHistogram.slice(-7).map(r4),
+        bollinger_middle_20_2: bollinger ? roundBollinger(bollinger.middle) : null,
+        bollinger_upper_20_2: bollinger ? roundBollinger(bollinger.upper) : null,
+        bollinger_lower_20_2: bollinger ? roundBollinger(bollinger.lower) : null,
+        bollinger_percent_b_20_2: bollinger ? roundBollinger(bollinger.percentB) : null,
+        bollinger_bandwidth_percent_20_2: bollinger ? roundBollinger(bollinger.bandwidthPercent) : null,
         adx_14: r4(adx[adx.length - 1]),
         positive_di_14: r4(plusDi[plusDi.length - 1]),
         negative_di_14: r4(minusDi[minusDi.length - 1]),
@@ -113,7 +123,10 @@ export function useDashboardData(symbol, interval) {
         rsi14: rsi14[i],
         macdLine: macdLine[i],
         macdSignal: signalLine[i],
-        macdHist: macdHistogram[i]
+        macdHist: macdHistogram[i],
+        bollingerMiddle: bollingerByCandle[i]?.middle ?? null,
+        bollingerUpper: bollingerByCandle[i]?.upper ?? null,
+        bollingerLower: bollingerByCandle[i]?.lower ?? null
       }));
 
       setData(chartData);

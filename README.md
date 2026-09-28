@@ -9,7 +9,7 @@ CryptDash is a responsive cryptocurrency market dashboard that brings live price
 - **Live crypto market tracking:** Monitors selected USDT pairs with Binance kline and ticker data.
 - **Realtime-first data flow:** Streams Binance WebSocket updates with a polling fallback for less reliable environments.
 - **Interactive chart experience:** Switch between candlestick, line, and area views with chart overlays and indicators.
-- **Technical analysis toolkit:** Includes volume, EMA, MA, MACD, RSI, ADX, and directional index calculations.
+- **Technical analysis toolkit:** Includes volume, EMA, MA, Bollinger Bands, MACD, RSI, ADX, and directional index calculations.
 - **AI-powered market insight:** Converts the latest technical payload into structured buy, hold, and sell confidence through an OpenRouter-backed Netlify function.
 - **Sentiment at a glance:** Displays the Fear & Greed Index history from Alternative.me alongside market context.
 - **Crypto news feed:** Surfaces recent Cointelegraph RSS items directly in the dashboard.
